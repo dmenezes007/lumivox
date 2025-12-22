@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { DocumentContent, Language, LANGUAGES, AnalysisMode } from './types';
+import SplashScreen from './components/SplashScreen';
+import LoginPage from './components/LoginPage';
 import FileUpload from './components/FileUpload';
 import Sidebar from './components/Sidebar';
 import StatCard from './components/StatCard';
@@ -29,8 +31,10 @@ import {
 } from 'lucide-react';
 
 type ProcessStatus = 'idle' | 'processing' | 'success' | 'error';
+type AppScreen = 'splash' | 'login' | 'app';
 
 const App: React.FC = () => {
+  const [currentScreen, setCurrentScreen] = useState<AppScreen>('splash');
   const [doc, setDoc] = useState<DocumentContent | null>(null);
   const [selectedLang, setSelectedLang] = useState<Language>(LANGUAGES[1]); // Default to PT
   const [loading, setLoading] = useState(false);
@@ -45,6 +49,26 @@ const App: React.FC = () => {
   const [processStatus, setProcessStatus] = useState<ProcessStatus>('idle');
   const [processProgress, setProcessProgress] = useState(0);
   const [toasts, setToasts] = useState<ToastProps[]>([]);
+
+  // Handle splash complete
+  const handleSplashComplete = () => {
+    setCurrentScreen('login');
+  };
+
+  // Handle login
+  const handleLogin = () => {
+    setCurrentScreen('app');
+  };
+
+  // Render splash screen
+  if (currentScreen === 'splash') {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
+  // Render login page
+  if (currentScreen === 'login') {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
   // Toast utility function
   const addToast = (type: ToastProps['type'], title: string, message?: string) => {
@@ -414,8 +438,19 @@ const App: React.FC = () => {
     </div>
   );
 
+  // Main App Content
   return (
     <div className="min-h-screen gradient-bg dark">
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} />
+      
+      {/* Progress Indicator */}
+      <ProgressIndicator 
+        status={processStatus} 
+        progress={processProgress}
+        message={processStatus === 'processing' ? 'Analisando documento com IA...' : undefined}
+      />
+      
       <Sidebar 
         activeView={activeView}
         onViewChange={setActiveView}
@@ -429,7 +464,7 @@ const App: React.FC = () => {
         {/* Demo Mode Banner */}
         {isDemoMode && showDemoBanner && (
           <div className="max-w-7xl mx-auto mb-6">
-            <Card className="border-2 border-yellow-500/50 bg-yellow-500/10 hover-lift">
+            <Card className="border-2 border-yellow-500/50 bg-yellow-500/10 hover-lift backdrop-blur-sm">
               <CardContent className="p-5 flex items-start gap-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
                   <AlertCircle className="w-6 h-6 text-yellow-500" />

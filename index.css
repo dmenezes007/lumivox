@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:wght@400;500;600;700&display=swap');
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -25,11 +27,13 @@
     --ring: 264 70% 50%;
     --radius: 0.5rem;
     
-    /* Brand Colors */
-    --brand-gold: 38 85% 48%;
+    /* Premium Bento Grid Colors */
+    --brand-gold: 38 95% 58%;
     --brand-purple: 264 70% 50%;
-    --brand-purple-dark: 264 50% 30%;
+    --brand-purple-dark: 264 60% 25%;
     --brand-purple-light: 264 70% 65%;
+    --brand-pink: 330 85% 65%;
+    --brand-blue: 217 91% 60%;
     
     /* Semantic Colors */
     --success: 142 76% 36%;
@@ -41,25 +45,25 @@
   }
 
   .dark {
-    --background: 264 45% 10%;
+    --background: 264 50% 8%;
     --foreground: 0 0% 98%;
-    --card: 264 30% 15%;
+    --card: 264 35% 12%;
     --card-foreground: 0 0% 98%;
-    --popover: 264 30% 15%;
+    --popover: 264 35% 12%;
     --popover-foreground: 0 0% 98%;
-    --primary: 38 85% 55%;
-    --primary-foreground: 0 0% 10%;
-    --secondary: 264 20% 25%;
+    --primary: 38 95% 58%;
+    --primary-foreground: 264 50% 8%;
+    --secondary: 264 25% 20%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 264 20% 20%;
-    --muted-foreground: 264 10% 65%;
-    --accent: 38 85% 50%;
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 62.8% 50%;
+    --muted: 264 25% 18%;
+    --muted-foreground: 264 10% 70%;
+    --accent: 38 95% 58%;
+    --accent-foreground: 264 50% 8%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 264 20% 25%;
-    --input: 264 20% 20%;
-    --ring: 38 85% 50%;
+    --border: 264 25% 22%;
+    --input: 264 25% 18%;
+    --ring: 38 95% 58%;
   }
 }
 
@@ -69,17 +73,29 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   
   .academic-text {
     font-family: 'Lora', 'Georgia', serif;
-    line-height: 1.8;
+    line-height: 1.85;
     font-size: 0.95rem;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
   }
 }
 
 @layer components {
+  /* Glass Card Effect */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
   /* Gradient Background */
   .gradient-bg {
     background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(264 40% 12%) 100%);
@@ -92,7 +108,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  /* Brand Gradient */
+  /* Premium Brand Gradient */
   .brand-gradient {
     background: linear-gradient(135deg, hsl(var(--brand-gold)) 0%, hsl(var(--brand-purple)) 100%);
   }
@@ -113,6 +129,11 @@
     100% { background-position: 1000px 0; }
   }
   
+  @keyframes animate-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
   .shimmer {
     animation: shimmer 2s infinite;
     background: linear-gradient(
@@ -124,6 +145,40 @@
     background-size: 1000px 100%;
   }
   
+  .animate-shimmer {
+    animation: animate-shimmer 2s infinite;
+  }
+  
+  /* Float Animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  @keyframes float-delayed {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .animate-float-delayed {
+    animation: float-delayed 4s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+  
+  /* Slow Spin */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+  
   /* Pulse Animation */
   @keyframes pulse-slow {
     0%, 100% { opacity: 1; }
@@ -132,6 +187,10 @@
   
   .pulse-slow {
     animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .delay-700 {
+    animation-delay: 700ms;
   }
   
   /* Spin Animation */
