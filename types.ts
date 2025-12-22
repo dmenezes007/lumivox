@@ -31,3 +31,20 @@ export enum AnalysisMode {
   FullTranslation = 'TRANSLATION',
   Insights = 'INSIGHTS'
 }
+
+export interface Voice {
+  id: string;
+  name: string;
+  gender: 'male' | 'female';
+  language: string;
+  description: string;
+}
+
+export const GEMINI_VOICES: Voice[] = [
+  { id: 'Puck', name: 'Puck', gender: 'male', language: 'en', description: 'Voz masculina expressiva' },
+  { id: 'Charon', name: 'Charon', gender: 'male', language: 'en', description: 'Voz masculina profunda' },
+  { id: 'Kore', name: 'Kore', gender: 'female', language: 'en', description: 'Voz feminina suave' },
+  { id: 'Fenrir', name: 'Fenrir', gender: 'male', language: 'en', description: 'Voz masculina forte' },
+  { id: 'Aoede', name: 'Aoede', gender: 'female', language: 'en', description: 'Voz feminina melódica' },
+  { id: 'Zephyr', name: 'Zephyr', gender: 'male', language: 'en', description: 'Voz masculina leve' }
+];

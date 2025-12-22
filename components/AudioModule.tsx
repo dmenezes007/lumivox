@@ -2,8 +2,8 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { FileText, Volume2, Loader2, Play, Pause, Sparkles } from 'lucide-react';
-import { DocumentContent, Language } from '../types';
+import { FileText, Volume2, Loader2, Play, Pause, Sparkles, User } from 'lucide-react';
+import { DocumentContent, Language, Voice } from '../types';
 
 interface AudioModuleProps {
   doc: DocumentContent;
@@ -11,9 +11,14 @@ interface AudioModuleProps {
   loading: boolean;
   isSpeaking: boolean;
   audioGenerated: boolean;
+  selectedVoice: Voice;
+  voices: Voice[];
+  audioQuotaUsed: number;
+  audioQuotaLimit: number;
   onProcess: () => void;
   onPlayPause: () => void;
   onLanguageChange: (lang: Language) => void;
+  onVoiceChange: (voice: Voice) => void;
   languages: Language[];
 }
 
@@ -23,12 +28,19 @@ const AudioModule: React.FC<AudioModuleProps> = ({
   loading,
   isSpeaking,
   audioGenerated,
+  selectedVoice,
+  voices,
+  audioQuotaUsed,
+  audioQuotaLimit,
   onProcess,
   onPlayPause,
   onLanguageChange,
+  onVoiceChange,
   languages
 }) => {
   const textToNarrate = doc.translatedText || doc.originalText;
+  const quotaRemaining = audioQuotaLimit - audioQuotaUsed;
+  const quotaPercentage = (audioQuotaUsed / audioQuotaLimit) * 100;
 
   return (
     <div className="space-y-6">
@@ -40,7 +52,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
             Conversão para Áudio
           </h1>
           <p className="text-muted-foreground">
-            Transforme seu documento em narração de alta qualidade
+            Transforme seu documento em narração com vozes premium
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -53,28 +65,42 @@ const AudioModule: React.FC<AudioModuleProps> = ({
               <option key={lang.code} value={lang.code}>{lang.flag} {lang.name}</option>
             ))}
           </select>
+          
+          <select 
+            value={selectedVoice.id}
+            onChange={(e) => onVoiceChange(voices.find(v => v.id === e.target.value) || voices[0])}
+            className="bg-card border-2 border-border hover:border-primary rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
+            title={selectedVoice.description}
+          >
+            {voices.map(voice => (
+              <option key={voice.id} value={voice.id}>
+                {voice.gender === 'male' ? '👨' : '👩'} {voice.name}
+              </option>
+            ))}
+          </select>
+          
           <Button 
             onClick={onProcess}
-            disabled={loading}
+            disabled={loading || quotaRemaining <= 0}
             size="lg"
             className="shadow-lg hover-lift brand-gradient"
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Preparando...
+                Gerando Áudio...
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                Preparar Áudio
+                Gerar Áudio
               </>
             )}
           </Button>
         </div>
       </div>
 
-      {/* Info */}
+      {/* Info + Quota Indicator */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="info">
           {textToNarrate.split(' ').length} palavras
@@ -82,17 +108,45 @@ const AudioModule: React.FC<AudioModuleProps> = ({
         <Badge variant="outline">
           Idioma: {selectedLang.name}
         </Badge>
+        <Badge variant="outline" className="gap-1">
+          <User className="w-3 h-3" />
+          Voz: {selectedVoice.name}
+        </Badge>
         {audioGenerated && (
           <Badge variant="success">
             Áudio pronto
           </Badge>
         )}
         
-        {/* Browser TTS Info */}
-        <div className="ml-auto">
-          <Badge variant="default" className="text-xs">
-            ✨ Narração nativa do navegador (ilimitada)
-          </Badge>
+        {/* Quota Status */}
+        <div className="ml-auto flex items-center gap-2">
+          <div className="text-xs text-muted-foreground">
+            Quota Diária:
+          </div>
+          {quotaRemaining > 0 ? (
+            <Badge 
+              variant={quotaRemaining <= 3 ? "warning" : "default"} 
+              className="text-xs font-mono"
+            >
+              {quotaRemaining}/{audioQuotaLimit} disponíveis
+            </Badge>
+          ) : (
+            <Badge variant="destructive" className="text-xs animate-pulse">
+              ⚠️ Quota esgotada - Aguarde até amanhã
+            </Badge>
+          )}
+          
+          {/* Progress Bar */}
+          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+            <div 
+              className={`h-full transition-all duration-500 ${
+                quotaPercentage >= 100 ? 'bg-red-500' :
+                quotaPercentage >= 70 ? 'bg-yellow-500' :
+                'bg-green-500'
+              }`}
+              style={{ width: `${quotaPercentage}%` }}
+            />
+          </div>
         </div>
       </div>
 
@@ -130,8 +184,11 @@ const AudioModule: React.FC<AudioModuleProps> = ({
                     <Volume2 className="w-16 h-16 text-[#3B2667]" />
                   </div>
                   <h3 className="text-xl font-bold mb-2">{doc.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Narração em {selectedLang.name}
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Narração em {selectedLang.name} • Voz {selectedVoice.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-6">
+                    {selectedVoice.description}
                   </p>
                   <Button 
                     onClick={onPlayPause}
@@ -166,7 +223,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                 <Volume2 className="w-16 h-16 mb-4 opacity-50" />
                 <p className="text-lg font-medium">Aguardando conversão</p>
-                <p className="text-sm">Selecione o idioma e clique em "Gerar Áudio"</p>
+                <p className="text-sm">Selecione a voz e clique em "Gerar Áudio"</p>
               </div>
             )}
           </CardContent>

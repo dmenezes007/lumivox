@@ -59,23 +59,20 @@ export const translateAndAnalyze = async (
   }
 };
 
-export const generateSpeech = async (text: string, languageCode: string) => {
+export const generateSpeech = async (text: string, voiceName: string = 'Puck') => {
   // Se não tiver API key, usa modo demo
   if (!hasApiKey) {
     console.warn('⚠️ generateSpeech: API Key não configurada, usando modo demo');
-    return mockGenerateSpeech(text, languageCode);
+    return mockGenerateSpeech(text, 'en');
   }
 
   try {
-    console.log('🎤 Gerando áudio com Gemini API...');
+    console.log(`🎤 Gerando áudio com voz ${voiceName}...`);
     const ai = new GoogleGenAI({ apiKey: API_KEY });
-    
-    // Mapping some common codes to voices
-    const voiceName = languageCode === 'pt' ? 'Kore' : 'Zephyr';
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: text.substring(0, 1000) }] }], // Limit to 1000 chars for demo TTS
+      contents: [{ parts: [{ text: text.substring(0, 5000) }] }], // Aumentado para 5000 chars
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {
