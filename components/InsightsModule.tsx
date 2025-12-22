@@ -21,24 +21,13 @@ const InsightsModule: React.FC<InsightsModuleProps> = ({
   const handleDownload = () => {
     if (!insights) return;
     
-    const content = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>${doc.title} - Insights</title>
-</head>
-<body>
-  <h1>${doc.title}</h1>
-  <h2>Principais Insights</h2>
-  <p>${insights.replace(/\n/g, '</p><p>')}</p>
-</body>
-</html>`;
+    const content = `${doc.title}\n${'='.repeat(60)}\n\nPrincipais Insights\n\n${insights}`;
     
-    const blob = new Blob([content], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_insights.docx`;
+    a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_insights.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -122,7 +111,7 @@ const InsightsModule: React.FC<InsightsModuleProps> = ({
                 className="gap-2"
               >
                 <Download className="w-4 h-4" />
-                Download DOCX
+                Download TXT
               </Button>
             )}
           </CardHeader>

@@ -59,6 +59,7 @@ const App: React.FC = () => {
   const [summary, setSummary] = useState<string>('');
   const [insights, setInsights] = useState<string>('');
   const [audioGenerated, setAudioGenerated] = useState(false);
+  const [audioSource, setAudioSource] = useState<AudioBufferSourceNode | null>(null);
   
   // Progress & Toast States
   const [processStatus, setProcessStatus] = useState<ProcessStatus>('idle');
@@ -316,6 +317,17 @@ const App: React.FC = () => {
   const handleProcess = handleTranslate; // Mantém para compatibilidade
 
   const handleTTS = async () => {
+    if (isSpeaking) {
+      // Pause/Stop
+      if (audioSource) {
+        audioSource.stop();
+        setAudioSource(null);
+      }
+      setIsSpeaking(false);
+      addToast('info', 'Áudio Pausado', 'A reprodução foi interrompida.');
+      return;
+    }
+
     const textToRead = doc?.translatedText || doc?.originalText;
     if (!textToRead) return;
 
@@ -333,14 +345,17 @@ const App: React.FC = () => {
         source.connect(audioCtx.destination);
         source.onended = () => {
           setIsSpeaking(false);
+          setAudioSource(null);
           addToast('success', 'Áudio Concluído', 'A reprodução foi finalizada.');
         };
         source.start();
+        setAudioSource(source);
         addToast('success', 'Reproduzindo Áudio', 'O texto está sendo narrado.');
       }
     } catch (err) {
       console.error(err);
       setIsSpeaking(false);
+      setAudioSource(null);
       addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
     }
   };

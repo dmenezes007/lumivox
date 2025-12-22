@@ -25,25 +25,14 @@ const TranslateModule: React.FC<TranslateModuleProps> = ({
   const handleDownload = () => {
     if (!doc.translatedText) return;
     
-    // Create DOCX content
-    const content = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>${doc.title} - Tradução</title>
-</head>
-<body>
-  <h1>${doc.title}</h1>
-  <h2>Traduzido para: ${doc.targetLanguage}</h2>
-  <p>${doc.translatedText.replace(/\n/g, '</p><p>')}</p>
-</body>
-</html>`;
+    // Create text content for download
+    const content = `${doc.title}\n${'='.repeat(60)}\n\nTraduzido para: ${doc.targetLanguage}\n\n${doc.translatedText}`;
     
-    const blob = new Blob([content], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_traduzido.docx`;
+    a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_traduzido.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -138,7 +127,7 @@ const TranslateModule: React.FC<TranslateModuleProps> = ({
                 className="gap-2"
               >
                 <Download className="w-4 h-4" />
-                Download DOCX
+                Download TXT
               </Button>
             )}
           </CardHeader>
