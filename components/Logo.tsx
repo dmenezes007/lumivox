@@ -46,16 +46,12 @@ const Logo: React.FC<LogoProps> = ({
         alt="IluminaVox" 
         className="w-full h-full object-contain drop-shadow-xl"
       />
-    </div>
-  );
-};
-
+      
       {/* Glossy Overlay */}
       <div 
-        className="absolute inset-0 rounded-2xl"
+        className="absolute inset-0 rounded-2xl pointer-events-none"
         style={{
-          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
-          pointerEvents: 'none'
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, transparent 50%)'
         }}
       />
     </div>
@@ -63,3 +59,4 @@ const Logo: React.FC<LogoProps> = ({
 };
 
 export default Logo;
+
