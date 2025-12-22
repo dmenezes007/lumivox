@@ -4,7 +4,9 @@ import SplashScreen from './components/SplashScreen';
 import LoginScreen from './components/LoginScreen';
 import FileUpload from './components/FileUpload';
 import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import StatCard from './components/StatCard';
+import AnalyticsModule from './components/AnalyticsModule';
 import { BentoGrid, BentoGridItem } from './components/BentoGrid';
 import AnalyticsChart from './components/AnalyticsChart';
 import ProgressIndicator from './components/ProgressIndicator';
@@ -15,6 +17,7 @@ import { Button } from './components/ui/button';
 import { translateAndAnalyze, generateSpeech, decode, decodeAudioData } from './services/geminiService';
 import { isDemoMode } from './services/mockService';
 import { useAuth } from './hooks/useAuth';
+import { cn } from './lib/utils';
 import { 
   FileText, 
   Languages as LanguagesIcon, 
@@ -47,6 +50,8 @@ const App: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [processingTime, setProcessingTime] = useState(0);
   const [totalProcessed, setTotalProcessed] = useState(0);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [documentHistory, setDocumentHistory] = useState<any[]>([]);
   
   // Progress & Toast States
   const [processStatus, setProcessStatus] = useState<ProcessStatus>('idle');
@@ -120,12 +125,26 @@ const App: React.FC = () => {
   ];
 
   const handleFileLoaded = (text: string, filename: string) => {
+    const wordCount = text.split(/\s+/).length;
     setDoc({
       title: filename,
       originalText: text,
     });
     setActiveView('translate');
     setTotalProcessed(prev => prev + 1);
+    
+    // Add to document history
+    const newDoc = {
+      id: Date.now().toString(),
+      filename,
+      date: new Date(),
+      status: 'processing' as const,
+      processingTime: 0,
+      wordCount,
+      language: selectedLang.name
+    };
+    setDocumentHistory(prev => [...prev, newDoc]);
+    
     addToast('success', 'Arquivo Carregado', `${filename} foi carregado com sucesso!`);
   };
 
@@ -160,12 +179,27 @@ const App: React.FC = () => {
       const timeElapsed = (endTime - startTime) / 1000;
       setProcessingTime(timeElapsed);
       
+      // Update document history
+      setDocumentHistory(prev => prev.map(d => 
+        d.filename === doc.title && d.status === 'processing'
+          ? { ...d, status: 'success' as const, processingTime: timeElapsed }
+          : d
+      ));
+      
       setProcessStatus('success');
       addToast('success', 'Processamento Concluído!', `Documento processado em ${timeElapsed.toFixed(1)}s`);
       
       setTimeout(() => setProcessStatus('idle'), 3000);
     } catch (err) {
       console.error(err);
+      
+      // Update document history with error
+      setDocumentHistory(prev => prev.map(d => 
+        d.filename === doc.title && d.status === 'processing'
+          ? { ...d, status: 'error' as const, processingTime: 0 }
+          : d
+      ));
+      
       setProcessStatus('error');
       addToast('error', 'Erro no Processamento', 'Não foi possível processar o documento. Tente novamente.');
       setTimeout(() => setProcessStatus('idle'), 5000);
@@ -208,7 +242,7 @@ const App: React.FC = () => {
     <div className="space-y-6">
       <div className="mb-8">
         <h1 className="text-5xl font-bold mb-3">
-          <span className="text-gradient">Bem-vindo ao IluminaVox</span>
+          <span className="text-gradient">Bem-vindo ao IluminaMind</span>
           <Sparkles className="inline-block w-8 h-8 ml-2 text-primary animate-pulse" />
         </h1>
         <p className="text-xl text-muted-foreground">
@@ -232,7 +266,6 @@ const App: React.FC = () => {
             value={`${processingTime.toFixed(1)}s`}
             trend="down"
             trendValue="-8%"
-            subtitle="Processamento otimizado"
             icon={<Clock className="w-6 h-6" />}
           />
         </BentoGridItem>
@@ -408,60 +441,7 @@ const App: React.FC = () => {
   };
 
   const renderAnalytics = () => (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-foreground mb-6">
-        Análises e Estatísticas
-      </h1>
-      
-      <BentoGrid>
-        <BentoGridItem>
-          <StatCard
-            title="Total de Documentos"
-            value={totalProcessed}
-            trend="up"
-            trendValue="+15%"
-            subtitle="Este mês"
-            icon={<FileText className="w-6 h-6" />}
-          />
-        </BentoGridItem>
-        <BentoGridItem>
-          <StatCard
-            title="Tempo Médio"
-            value={`${processingTime.toFixed(1)}s`}
-            trend="down"
-            trendValue="-8%"
-            subtitle="Últimos 30 dias"
-            icon={<Clock className="w-6 h-6" />}
-          />
-        </BentoGridItem>
-        <BentoGridItem>
-          <StatCard
-            title="Áudio Gerado"
-            value="142"
-            trend="up"
-            trendValue="+23%"
-            subtitle="Horas de áudio"
-            icon={<Volume2 className="w-6 h-6" />}
-          />
-        </BentoGridItem>
-        <BentoGridItem span="double">
-          <AnalyticsChart
-            title="Documentos Processados"
-            description="Últimos 6 meses"
-            data={mockAnalyticsData}
-            type="area"
-          />
-        </BentoGridItem>
-        <BentoGridItem>
-          <AnalyticsChart
-            title="Performance"
-            description="Tempo médio"
-            data={mockAnalyticsData}
-            type="bar"
-          />
-        </BentoGridItem>
-      </BentoGrid>
-    </div>
+    <AnalyticsModule documents={documentHistory} />
   );
 
   // Main App Content
@@ -470,16 +450,12 @@ const App: React.FC = () => {
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} />
       
-      {/* Progress Indicator */}
-      <ProgressIndicator 
-        status={processStatus} 
-        progress={processProgress}
-        message={processStatus === 'processing' ? 'Analisando documento com IA...' : undefined}
-      />
-      
       <Sidebar 
         activeView={activeView}
-        onViewChange={setActiveView}
+        onViewChange={(view) => {
+          setActiveView(view);
+          setIsSidebarCollapsed(false);
+        }}
         onUploadNew={() => {
           setDoc(null);
           setActiveView('home');
@@ -488,7 +464,16 @@ const App: React.FC = () => {
         userEmail={user?.email}
       />
       
-      <main className="ml-64 p-8">
+      <Header 
+        userEmail={user?.email}
+        onLogout={handleLogout}
+        isCollapsed={isSidebarCollapsed}
+      />
+      
+      <main className={cn(
+        "p-8 pt-24 transition-all duration-300",
+        isSidebarCollapsed ? "ml-20" : "ml-64"
+      )}>
         {/* Demo Mode Banner */}
         {isDemoMode && showDemoBanner && (
           <div className="max-w-7xl mx-auto mb-6">
@@ -537,9 +522,12 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      <footer className="ml-64 border-t border-border bg-card/50 backdrop-blur-sm py-6 text-center text-sm text-muted-foreground">
+      <footer className={cn(
+        "border-t border-border bg-card/50 backdrop-blur-sm py-6 text-center text-sm text-muted-foreground transition-all duration-300",
+        isSidebarCollapsed ? "ml-20" : "ml-64"
+      )}>
         <p className="flex items-center justify-center gap-2">
-          &copy; 2024 IluminaVox - Powered by 
+          &copy; 2024 IluminaMind - Powered by 
           <span className="font-semibold text-gradient">Gemini AI</span>
           <Sparkles className="w-4 h-4 text-primary" />
         </p>

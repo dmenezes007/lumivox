@@ -78,8 +78,8 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileLoaded, isLoading }) => {
 
   return (
     <div 
-      className={`relative border-2 border-dashed rounded-xl p-12 transition-all flex flex-col items-center justify-center text-center cursor-pointer
-        ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-slate-300 bg-white hover:border-slate-400'}
+      className={`relative border-2 border-dashed border-border/50 rounded-xl p-12 transition-all flex flex-col items-center justify-center text-center cursor-pointer bg-transparent backdrop-blur-sm
+        ${dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'hover:border-primary/50 hover:bg-card/30'}
         ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
@@ -95,20 +95,20 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileLoaded, isLoading }) => {
         onChange={handleChange}
       />
       
-      <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+      <div className="w-16 h-16 bg-gradient-to-br from-[#E49B10] to-[#F5C344] text-[#3B2667] rounded-full flex items-center justify-center mb-4 shadow-lg">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
       </div>
 
-      <h3 className="text-xl font-semibold mb-2">Upload de Documento Acadêmico</h3>
-      <p className="text-slate-500 max-w-xs">
+      <h3 className="text-xl font-semibold mb-2 text-foreground">Upload de Documento Acadêmico</h3>
+      <p className="text-muted-foreground max-w-xs">
         Arraste ou clique para enviar arquivos PDF, DOCX ou TXT para análise e tradução.
       </p>
 
       {isLoading && (
-        <div className="mt-4 flex items-center text-blue-600 font-medium">
-          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <div className="mt-4 flex items-center text-primary font-medium">
+          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
