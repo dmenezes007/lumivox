@@ -1,14 +1,24 @@
 
 import { GoogleGenAI, Modality } from "@google/genai";
 import { Language } from "../types";
+import { mockTranslateAndAnalyze, mockGenerateSpeech, isDemoMode } from "./mockService";
 
 const API_KEY = process.env.API_KEY || "";
+
+// Verifica se a API está disponível
+const hasApiKey = !!API_KEY && API_KEY !== "";
 
 export const translateAndAnalyze = async (
   text: string, 
   targetLang: Language,
   mode: 'translate' | 'summarize' | 'analyze'
 ) => {
+  // Se não tiver API key, usa modo demo
+  if (!hasApiKey) {
+    console.warn('⚠️ MODO DEMO ATIVO: Configure GEMINI_API_KEY para funcionalidade completa');
+    return mockTranslateAndAnalyze(text, targetLang, mode);
+  }
+
   const ai = new GoogleGenAI({ apiKey: API_KEY });
   
   const systemInstructions = `
@@ -26,19 +36,30 @@ export const translateAndAnalyze = async (
     prompt = `Extract the key insights, main arguments, and potential limitations of this research in ${targetLang.name}. Use bullet points.\n\nText: ${text.substring(0, 15000)}`;
   }
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: prompt,
-    config: {
-      systemInstruction: systemInstructions,
-      temperature: 0.3,
-    },
-  });
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: prompt,
+      config: {
+        systemInstruction: systemInstructions,
+        temperature: 0.3,
+      },
+    });
 
-  return response.text;
+    return response.text;
+  } catch (error) {
+    console.error('❌ Erro na API do Gemini:', error);
+    console.warn('⚠️ Alternando para modo demo devido a erro na API');
+    return mockTranslateAndAnalyze(text, targetLang, mode);
+  }
 };
 
 export const generateSpeech = async (text: string, languageCode: string) => {
+  // Se não tiver API key, usa modo demo
+  if (!hasApiKey) {
+    return mockGenerateSpeech(text, languageCode);
+  }
+
   const ai = new GoogleGenAI({ apiKey: API_KEY });
   
   // Mapping some common codes to voices

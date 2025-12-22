@@ -64,8 +64,14 @@ cd lumivox
 npm install
 ```
 
-3. **Configure as variáveis de ambiente**
+3. **Configure as variáveis de ambiente (OPCIONAL)**
+
+**🎭 Modo Demo:** O app funciona sem API key, com funcionalidades simuladas.
+
+**🚀 Modo Completo:** Para acesso total às funcionalidades de IA:
+
 ```bash
+# Obtenha uma chave GRATUITA em: https://ai.google.dev/
 cp .env.example .env
 ```
 
@@ -73,6 +79,8 @@ Edite o arquivo `.env` e adicione sua chave de API:
 ```env
 GEMINI_API_KEY=sua_chave_api_aqui
 ```
+
+📖 **Veja [API_OPTIONS.md](API_OPTIONS.md) para detalhes sobre as opções de API**
 
 4. **Inicie o servidor de desenvolvimento**
 ```bash

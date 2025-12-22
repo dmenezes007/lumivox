@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './com
 import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
 import { translateAndAnalyze, generateSpeech, decode, decodeAudioData } from './services/geminiService';
+import { isDemoMode } from './services/mockService';
 import { 
   FileText, 
   Languages as LanguagesIcon, 
@@ -19,7 +20,9 @@ import {
   BarChart3,
   Clock,
   FileCheck,
-  TrendingUp
+  TrendingUp,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -28,6 +31,7 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [activeView, setActiveView] = useState<string>('home');
   const [analysisType, setAnalysisType] = useState<AnalysisMode>(AnalysisMode.FullTranslation);
+  const [showDemoBanner, setShowDemoBanner] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [processingTime, setProcessingTime] = useState(0);
   const [totalProcessed, setTotalProcessed] = useState(0);
@@ -355,6 +359,41 @@ const App: React.FC = () => {
       />
       
       <main className="ml-64 p-8">
+        {/* Demo Mode Banner */}
+        {isDemoMode && showDemoBanner && (
+          <div className="max-w-7xl mx-auto mb-6">
+            <Card className="border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20">
+              <CardContent className="p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
+                    🎭 Modo Demonstração Ativo
+                  </h3>
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
+                    As funcionalidades de IA estão usando dados simulados. Para acesso completo às traduções, resumos e síntese de voz reais:
+                  </p>
+                  <a 
+                    href="https://ai.google.dev/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-yellow-700 dark:text-yellow-300 hover:underline"
+                  >
+                    Obtenha sua chave API gratuita do Gemini
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+                <button
+                  onClick={() => setShowDemoBanner(false)}
+                  className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-200"
+                  aria-label="Fechar banner"
+                >
+                  ✕
+                </button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto">
           {activeView === 'home' && renderHome()}
           {(activeView === 'translate' || activeView === 'summary' || activeView === 'insights') && renderDocument()}
