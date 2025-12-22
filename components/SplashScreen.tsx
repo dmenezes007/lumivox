@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, Zap } from 'lucide-react';
+import Logo from './Logo';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -49,19 +50,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
       <div className={`relative z-10 text-center space-y-12 transition-all duration-500 ${isClicked ? 'scale-150 opacity-0' : 'scale-100 opacity-100'}`}>
         {/* Logo with Dynamic Glow */}
         <div className="flex justify-center">
-          <div className={`relative transition-all duration-700 ${isHovering ? 'scale-110 rotate-3' : 'scale-100 rotate-0'}`}>
+          <div className={`relative transition-all duration-700 ${isHovering ? 'scale-110' : 'scale-100'}`}>
             {/* Rotating Glow Ring */}
-            <div className={`absolute inset-0 transition-all duration-700 ${isHovering ? 'blur-3xl opacity-80' : 'blur-2xl opacity-50'}`}>
+            <div className={`absolute -inset-8 transition-all duration-700 ${isHovering ? 'blur-3xl opacity-80' : 'blur-2xl opacity-50'}`}>
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 animate-spin-slow" />
             </div>
             
-            {/* Logo PNG */}
-            <div className="relative">
-              <img 
-                src="/iluminavox-logo.svg" 
-                alt="IluminaVox" 
-                className="w-48 h-48 drop-shadow-2xl"
-              />
+            {/* Logo Component - Modern Design */}
+            <div className="relative scale-[2.5]">
+              <Logo size="xl" animated={true} showText={false} />
             </div>
           </div>
         </div>
