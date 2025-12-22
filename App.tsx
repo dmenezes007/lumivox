@@ -5,6 +5,8 @@ import Sidebar from './components/Sidebar';
 import StatCard from './components/StatCard';
 import { BentoGrid, BentoGridItem } from './components/BentoGrid';
 import AnalyticsChart from './components/AnalyticsChart';
+import ProgressIndicator from './components/ProgressIndicator';
+import { ToastContainer, ToastProps } from './components/Toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
@@ -22,8 +24,11 @@ import {
   FileCheck,
   TrendingUp,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
+
+type ProcessStatus = 'idle' | 'processing' | 'success' | 'error';
 
 const App: React.FC = () => {
   const [doc, setDoc] = useState<DocumentContent | null>(null);
@@ -35,6 +40,24 @@ const App: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [processingTime, setProcessingTime] = useState(0);
   const [totalProcessed, setTotalProcessed] = useState(0);
+  
+  // Progress & Toast States
+  const [processStatus, setProcessStatus] = useState<ProcessStatus>('idle');
+  const [processProgress, setProcessProgress] = useState(0);
+  const [toasts, setToasts] = useState<ToastProps[]>([]);
+
+  // Toast utility function
+  const addToast = (type: ToastProps['type'], title: string, message?: string) => {
+    const id = Date.now().toString();
+    const newToast: ToastProps = {
+      id,
+      type,
+      title,
+      message,
+      onClose: (toastId) => setToasts(prev => prev.filter(t => t.id !== toastId))
+    };
+    setToasts(prev => [...prev, newToast]);
+  };
 
   // Mock data for analytics
   const mockAnalyticsData = [
@@ -53,18 +76,29 @@ const App: React.FC = () => {
     });
     setActiveView('translate');
     setTotalProcessed(prev => prev + 1);
+    addToast('success', 'Arquivo Carregado', `${filename} foi carregado com sucesso!`);
   };
 
   const handleProcess = async () => {
     if (!doc) return;
     setLoading(true);
+    setProcessStatus('processing');
+    setProcessProgress(0);
     const startTime = Date.now();
     
     try {
       const mode = analysisType === AnalysisMode.FullTranslation ? 'translate' : 
                    analysisType === AnalysisMode.Summary ? 'summarize' : 'analyze';
       
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setProcessProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+      
       const result = await translateAndAnalyze(doc.originalText, selectedLang, mode);
+      
+      clearInterval(progressInterval);
+      setProcessProgress(100);
       
       setDoc(prev => prev ? ({
         ...prev,
@@ -73,10 +107,18 @@ const App: React.FC = () => {
       }) : null);
       
       const endTime = Date.now();
-      setProcessingTime((endTime - startTime) / 1000);
+      const timeElapsed = (endTime - startTime) / 1000;
+      setProcessingTime(timeElapsed);
+      
+      setProcessStatus('success');
+      addToast('success', 'Processamento Concluído!', `Documento processado em ${timeElapsed.toFixed(1)}s`);
+      
+      setTimeout(() => setProcessStatus('idle'), 3000);
     } catch (err) {
       console.error(err);
-      alert('Falha ao processar o documento.');
+      setProcessStatus('error');
+      addToast('error', 'Erro no Processamento', 'Não foi possível processar o documento. Tente novamente.');
+      setTimeout(() => setProcessStatus('idle'), 5000);
     } finally {
       setLoading(false);
     }
@@ -87,6 +129,8 @@ const App: React.FC = () => {
     if (!textToRead) return;
 
     setIsSpeaking(true);
+    addToast('info', 'Gerando Áudio', 'Convertendo texto em fala...');
+    
     try {
       const base64Audio = await generateSpeech(textToRead, selectedLang.code);
       if (base64Audio) {
@@ -96,23 +140,29 @@ const App: React.FC = () => {
         const source = audioCtx.createBufferSource();
         source.buffer = buffer;
         source.connect(audioCtx.destination);
-        source.onended = () => setIsSpeaking(false);
+        source.onended = () => {
+          setIsSpeaking(false);
+          addToast('success', 'Áudio Concluído', 'A reprodução foi finalizada.');
+        };
         source.start();
+        addToast('success', 'Reproduzindo Áudio', 'O texto está sendo narrado.');
       }
     } catch (err) {
       console.error(err);
       setIsSpeaking(false);
+      addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
     }
   };
 
   const renderHome = () => (
     <div className="space-y-6">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-foreground mb-2">
-          Bem-vindo ao LumiVox
+        <h1 className="text-5xl font-bold mb-3">
+          <span className="text-gradient">Bem-vindo ao LumiVox</span>
+          <Sparkles className="inline-block w-8 h-8 ml-2 text-primary animate-pulse" />
         </h1>
-        <p className="text-lg text-muted-foreground">
-          Traduza, analise e ouça seus documentos acadêmicos com IA
+        <p className="text-xl text-muted-foreground">
+          Traduza, analise e ouça seus documentos acadêmicos com Inteligência Artificial
         </p>
       </div>
 
@@ -179,7 +229,7 @@ const App: React.FC = () => {
             <select 
               value={selectedLang.code}
               onChange={(e) => setSelectedLang(LANGUAGES.find(l => l.code === e.target.value) || LANGUAGES[0])}
-              className="bg-card border border-border rounded-lg px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-primary outline-none"
+              className="bg-card border-2 border-border hover:border-primary rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
             >
               {LANGUAGES.map(lang => (
                 <option key={lang.code} value={lang.code}>{lang.flag} {lang.name}</option>
@@ -188,8 +238,20 @@ const App: React.FC = () => {
             <Button 
               onClick={handleProcess}
               disabled={loading}
+              size="lg"
+              className="shadow-lg hover-lift"
             >
-              {loading ? 'Processando...' : 'Processar'}
+              {loading ? (
+                <>
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                  Processando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5" />
+                  Processar
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -203,9 +265,9 @@ const App: React.FC = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {[
-                { id: AnalysisMode.FullTranslation, label: 'Tradução Completa', icon: LanguagesIcon },
-                { id: AnalysisMode.Summary, label: 'Resumo Acadêmico', icon: BookOpen },
-                { id: AnalysisMode.Insights, label: 'Principais Insights', icon: TrendingUp },
+                { id: AnalysisMode.FullTranslation, label: 'Tradução Completa', icon: LanguagesIcon, desc: 'Tradução palavra por palavra' },
+                { id: AnalysisMode.Summary, label: 'Resumo Acadêmico', icon: BookOpen, desc: 'Resumo estruturado' },
+                { id: AnalysisMode.Insights, label: 'Principais Insights', icon: TrendingUp, desc: 'Pontos-chave do texto' },
               ].map(type => {
                 const Icon = type.icon;
                 const isActive = analysisType === type.id;
@@ -214,14 +276,19 @@ const App: React.FC = () => {
                   <button
                     key={type.id}
                     onClick={() => setAnalysisType(type.id)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all border-2 ${
+                    className={`flex flex-col items-start gap-2 p-4 rounded-xl text-sm font-medium transition-all border-2 hover-lift ${
                       isActive 
-                        ? 'border-primary bg-primary/10 text-primary' 
-                        : 'border-border hover:border-primary/50'
+                        ? 'border-primary brand-gradient text-white shadow-xl scale-105' 
+                        : 'border-border hover:border-primary/50 bg-card'
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    {type.label}
+                    <Icon className="w-6 h-6" />
+                    <div>
+                      <div className="font-semibold">{type.label}</div>
+                      <div className={`text-xs mt-1 ${isActive ? 'text-white/80' : 'text-muted-foreground'}`}>
+                        {type.desc}
+                      </div>
+                    </div>
                   </button>
                 );
               })}
@@ -348,7 +415,7 @@ const App: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background dark">
+    <div className="min-h-screen gradient-bg dark">
       <Sidebar 
         activeView={activeView}
         onViewChange={setActiveView}
@@ -362,32 +429,37 @@ const App: React.FC = () => {
         {/* Demo Mode Banner */}
         {isDemoMode && showDemoBanner && (
           <div className="max-w-7xl mx-auto mb-6">
-            <Card className="border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20">
-              <CardContent className="p-4 flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 mt-0.5 flex-shrink-0" />
+            <Card className="border-2 border-yellow-500/50 bg-yellow-500/10 hover-lift">
+              <CardContent className="p-5 flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-yellow-500" />
+                </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
+                  <h3 className="font-bold text-yellow-100 mb-2 text-lg flex items-center gap-2">
                     🎭 Modo Demonstração Ativo
+                    <Badge variant="warning" className="ml-2">Demo</Badge>
                   </h3>
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">
-                    As funcionalidades de IA estão usando dados simulados. Para acesso completo às traduções, resumos e síntese de voz reais:
+                  <p className="text-sm text-yellow-200/90 mb-3 leading-relaxed">
+                    As funcionalidades de IA estão usando dados simulados. Para acesso completo às traduções, resumos e síntese de voz reais com o Gemini AI:
                   </p>
                   <a 
                     href="https://ai.google.dev/" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-yellow-700 dark:text-yellow-300 hover:underline"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-500 text-black font-semibold hover:bg-yellow-400 transition-all shadow-md hover:shadow-lg"
                   >
-                    Obtenha sua chave API gratuita do Gemini
                     <ExternalLink className="w-4 h-4" />
+                    Obtenha sua chave API gratuita
                   </a>
                 </div>
                 <button
                   onClick={() => setShowDemoBanner(false)}
-                  className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-200"
+                  className="flex-shrink-0 text-yellow-400 hover:text-yellow-200 transition-colors"
                   aria-label="Fechar banner"
                 >
-                  ✕
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </CardContent>
             </Card>
@@ -402,9 +474,23 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      <footer className="ml-64 border-t border-border bg-card py-6 text-center text-sm text-muted-foreground">
-        <p>&copy; 2024 LumiVox - Powered by Gemini AI</p>
+      <footer className="ml-64 border-t border-border bg-card/50 backdrop-blur-sm py-6 text-center text-sm text-muted-foreground">
+        <p className="flex items-center justify-center gap-2">
+          &copy; 2024 LumiVox - Powered by 
+          <span className="font-semibold text-gradient">Gemini AI</span>
+          <Sparkles className="w-4 h-4 text-primary" />
+        </p>
       </footer>
+
+      {/* Progress Indicator */}
+      <ProgressIndicator 
+        status={processStatus}
+        progress={processProgress}
+        estimatedTime={5}
+      />
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} />
     </div>
   );
 };
