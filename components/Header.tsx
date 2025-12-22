@@ -9,6 +9,8 @@ export interface HeaderProps {
   onLogout?: () => void;
   isCollapsed?: boolean;
   className?: string;
+  notificationCount?: number;
+  onNotificationClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -16,7 +18,9 @@ const Header: React.FC<HeaderProps> = ({
   userName,
   onLogout, 
   isCollapsed = false,
-  className 
+  className,
+  notificationCount = 0,
+  onNotificationClick
 }) => {
   // Extract first name from email if no userName provided
   const displayName = userName || userEmail?.split('@')[0] || 'Usuário';
@@ -44,9 +48,18 @@ const Header: React.FC<HeaderProps> = ({
           variant="ghost" 
           size="icon"
           className="relative hover:bg-muted"
+          onClick={onNotificationClick}
+          title={`${notificationCount} notificações não lidas`}
         >
           <Bell className="w-5 h-5 text-muted-foreground" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+          {notificationCount > 0 && (
+            <>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                {notificationCount > 9 ? '9+' : notificationCount}
+              </span>
+            </>
+          )}
         </Button>
 
         {/* User Info */}

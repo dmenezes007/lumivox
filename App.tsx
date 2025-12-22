@@ -60,11 +60,35 @@ const App: React.FC = () => {
   const [insights, setInsights] = useState<string>('');
   const [audioGenerated, setAudioGenerated] = useState(false);
   const [audioSource, setAudioSource] = useState<AudioBufferSourceNode | null>(null);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   
   // Progress & Toast States
   const [processStatus, setProcessStatus] = useState<ProcessStatus>('idle');
   const [processProgress, setProcessProgress] = useState(0);
   const [toasts, setToasts] = useState<ToastProps[]>([]);
+
+  // Load document history from localStorage on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('documentHistory');
+    if (savedHistory) {
+      try {
+        const parsed = JSON.parse(savedHistory);
+        setDocumentHistory(parsed.map((doc: any) => ({
+          ...doc,
+          date: new Date(doc.date)
+        })));
+      } catch (error) {
+        console.error('Error loading document history:', error);
+      }
+    }
+  }, []);
+
+  // Save document history to localStorage whenever it changes
+  useEffect(() => {
+    if (documentHistory.length > 0) {
+      localStorage.setItem('documentHistory', JSON.stringify(documentHistory));
+    }
+  }, [documentHistory]);
 
   // Handle authentication flow
   useEffect(() => {
@@ -197,6 +221,7 @@ const App: React.FC = () => {
       
       setProcessStatus('success');
       addToast('success', 'Tradução Concluída!', `Documento traduzido em ${timeElapsed.toFixed(1)}s`);
+      setUnreadNotifications(prev => prev + 1);
       
       setTimeout(() => setProcessStatus('idle'), 3000);
     } catch (err) {
@@ -240,6 +265,7 @@ const App: React.FC = () => {
       
       setProcessStatus('success');
       addToast('success', 'Resumo Gerado!', `Resumo criado em ${timeElapsed.toFixed(1)}s`);
+      setUnreadNotifications(prev => prev + 1);
       
       setTimeout(() => setProcessStatus('idle'), 3000);
     } catch (err) {
@@ -276,6 +302,7 @@ const App: React.FC = () => {
       
       setProcessStatus('success');
       addToast('success', 'Insights Extraídos!', `Análise concluída em ${timeElapsed.toFixed(1)}s`);
+      setUnreadNotifications(prev => prev + 1);
       
       setTimeout(() => setProcessStatus('idle'), 3000);
     } catch (err) {
@@ -302,6 +329,7 @@ const App: React.FC = () => {
         setAudioGenerated(true);
         addToast('success', 'Áudio Gerado!', 'Conversão concluída com sucesso.');
         setProcessStatus('success');
+        setUnreadNotifications(prev => prev + 1);
         setTimeout(() => setProcessStatus('idle'), 3000);
       }
     } catch (err) {
@@ -491,6 +519,11 @@ const App: React.FC = () => {
         userEmail={user?.email}
         onLogout={handleLogout}
         isCollapsed={isSidebarCollapsed}
+        notificationCount={unreadNotifications}
+        onNotificationClick={() => {
+          setUnreadNotifications(0);
+          addToast('info', 'Notificações', `Você tem ${documentHistory.length} documentos processados`);
+        }}
       />
       
       <main className={cn(
