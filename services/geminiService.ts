@@ -8,6 +8,11 @@ const API_KEY = process.env.API_KEY || "";
 // Verifica se a API está disponível
 const hasApiKey = !!API_KEY && API_KEY !== "";
 
+// Log de diagnóstico (apenas em desenvolvimento)
+if (typeof window !== 'undefined') {
+  console.log('🔑 Status da API:', hasApiKey ? '✅ Configurada' : '⚠️ Não configurada (MODO DEMO)');
+}
+
 export const translateAndAnalyze = async (
   text: string, 
   targetLang: Language,
@@ -57,29 +62,44 @@ export const translateAndAnalyze = async (
 export const generateSpeech = async (text: string, languageCode: string) => {
   // Se não tiver API key, usa modo demo
   if (!hasApiKey) {
+    console.warn('⚠️ generateSpeech: API Key não configurada, usando modo demo');
     return mockGenerateSpeech(text, languageCode);
   }
 
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-  
-  // Mapping some common codes to voices
-  const voiceName = languageCode === 'pt' ? 'Kore' : 'Zephyr';
+  try {
+    console.log('🎤 Gerando áudio com Gemini API...');
+    const ai = new GoogleGenAI({ apiKey: API_KEY });
+    
+    // Mapping some common codes to voices
+    const voiceName = languageCode === 'pt' ? 'Kore' : 'Zephyr';
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-preview-tts",
-    contents: [{ parts: [{ text: text.substring(0, 1000) }] }], // Limit to 1000 chars for demo TTS
-    config: {
-      responseModalities: [Modality.AUDIO],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: { voiceName },
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-preview-tts",
+      contents: [{ parts: [{ text: text.substring(0, 1000) }] }], // Limit to 1000 chars for demo TTS
+      config: {
+        responseModalities: [Modality.AUDIO],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName },
+          },
         },
       },
-    },
-  });
+    });
 
-  const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-  return base64Audio;
+    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    
+    if (!base64Audio) {
+      console.error('❌ API retornou resposta mas sem dados de áudio');
+      console.log('📊 Resposta completa:', response);
+      return null;
+    }
+    
+    console.log('✅ Áudio gerado com sucesso, tamanho:', base64Audio.length);
+    return base64Audio;
+  } catch (error) {
+    console.error('❌ Erro ao gerar áudio com API:', error);
+    return null;
+  }
 };
 
 // Audio decoding helper

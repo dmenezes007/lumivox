@@ -64,8 +64,13 @@ export async function mockGenerateSpeech(
   text: string,
   languageCode: string
 ): Promise<string | null> {
+  // Simula delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
   console.warn('⚠️ MODO DEMO: Text-to-Speech requer GEMINI_API_KEY');
-  alert('🎤 Funcionalidade de áudio requer a API do Gemini.\n\nPara ativar:\n1. Obtenha uma chave gratuita em https://ai.google.dev\n2. Configure GEMINI_API_KEY no Vercel');
+  console.info('📝 Para ativar áudio:\n1. Obtenha chave gratuita em https://ai.google.dev\n2. Configure GEMINI_API_KEY no Vercel');
+  
+  // Retorna null para indicar que não há áudio disponível
   return null;
 }
 

@@ -327,16 +327,22 @@ const App: React.FC = () => {
     
     try {
       const base64Audio = await generateSpeech(textToRead, selectedLang.code);
-      if (base64Audio) {
+      if (base64Audio && base64Audio.length > 0) {
+        console.log('✅ Áudio gerado com sucesso, tamanho:', base64Audio.length);
         setGeneratedAudioBase64(base64Audio);
         setAudioGenerated(true);
         addToast('success', 'Áudio Gerado!', 'Conversão concluída com sucesso.');
         setProcessStatus('success');
         setUnreadNotifications(prev => prev + 1);
         setTimeout(() => setProcessStatus('idle'), 3000);
+      } else {
+        console.warn('⚠️ API não retornou áudio válido');
+        setProcessStatus('error');
+        addToast('error', 'Áudio não disponível', 'Configure a API Key do Gemini para usar esta funcionalidade.');
+        setTimeout(() => setProcessStatus('idle'), 5000);
       }
     } catch (err) {
-      console.error(err);
+      console.error('❌ Erro ao gerar áudio:', err);
       setProcessStatus('error');
       addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
       setTimeout(() => setProcessStatus('idle'), 5000);
@@ -367,10 +373,13 @@ const App: React.FC = () => {
     
     try {
       const base64Audio = await generateSpeech(textToRead, selectedLang.code);
-      if (base64Audio) {
+      if (base64Audio && base64Audio.length > 0) {
+        console.log('🎵 Iniciando reprodução de áudio...');
         const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
         const decodedBytes = decode(base64Audio);
+        console.log('📦 Bytes decodificados:', decodedBytes.length);
         const buffer = await decodeAudioData(decodedBytes, audioCtx, 24000, 1);
+        console.log('🎚️ Buffer criado, duração:', buffer.duration, 'segundos');
         const source = audioCtx.createBufferSource();
         source.buffer = buffer;
         source.connect(audioCtx.destination);
@@ -382,12 +391,16 @@ const App: React.FC = () => {
         source.start();
         setAudioSource(source);
         addToast('success', 'Reproduzindo Áudio', 'O texto está sendo narrado.');
+      } else {
+        console.warn('⚠️ Áudio não disponível');
+        setIsSpeaking(false);
+        addToast('error', 'Áudio não disponível', 'Configure a API Key do Gemini para usar esta funcionalidade.');
       }
     } catch (err) {
-      console.error(err);
+      console.error('❌ Erro na reprodução:', err);
       setIsSpeaking(false);
       setAudioSource(null);
-      addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
+      addToast('error', 'Erro no Áudio', 'Não foi possível reproduzir o áudio.');
     }
   };
 
