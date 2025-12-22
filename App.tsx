@@ -60,6 +60,7 @@ const App: React.FC = () => {
   const [insights, setInsights] = useState<string>('');
   const [audioGenerated, setAudioGenerated] = useState(false);
   const [audioSource, setAudioSource] = useState<AudioBufferSourceNode | null>(null);
+  const [generatedAudioBase64, setGeneratedAudioBase64] = useState<string>('');
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   
   // Progress & Toast States
@@ -167,6 +168,7 @@ const App: React.FC = () => {
     setSummary('');
     setInsights('');
     setAudioGenerated(false);
+    setGeneratedAudioBase64('');
     
     setActiveView('translate');
     setTotalProcessed(prev => prev + 1);
@@ -326,6 +328,7 @@ const App: React.FC = () => {
     try {
       const base64Audio = await generateSpeech(textToRead, selectedLang.code);
       if (base64Audio) {
+        setGeneratedAudioBase64(base64Audio);
         setAudioGenerated(true);
         addToast('success', 'Áudio Gerado!', 'Conversão concluída com sucesso.');
         setProcessStatus('success');
@@ -487,6 +490,7 @@ const App: React.FC = () => {
         loading={loading}
         isSpeaking={isSpeaking}
         audioGenerated={audioGenerated}
+        audioBase64={generatedAudioBase64}
         onProcess={handleGenerateAudio}
         onPlayPause={handleTTS}
         onLanguageChange={setSelectedLang}

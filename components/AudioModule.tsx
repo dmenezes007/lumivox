@@ -11,6 +11,7 @@ interface AudioModuleProps {
   loading: boolean;
   isSpeaking: boolean;
   audioGenerated: boolean;
+  audioBase64?: string;
   onProcess: () => void;
   onPlayPause: () => void;
   onLanguageChange: (lang: Language) => void;
@@ -23,25 +24,37 @@ const AudioModule: React.FC<AudioModuleProps> = ({
   loading,
   isSpeaking,
   audioGenerated,
+  audioBase64,
   onProcess,
   onPlayPause,
   onLanguageChange,
   languages
 }) => {
   const handleDownload = () => {
-    if (!audioGenerated) return;
+    if (!audioGenerated || !audioBase64) return;
     
-    // In a real implementation, this would download the actual MP3
-    // For now, we'll create a placeholder
-    const blob = new Blob(['Audio data would be here'], { type: 'audio/mpeg' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_audio.mp3`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      // Decode base64 to binary
+      const binaryString = atob(audioBase64);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      // Create blob with proper MP3 MIME type
+      const blob = new Blob([bytes], { type: 'audio/mpeg' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_audio.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erro ao fazer download do áudio:', error);
+      alert('Erro ao fazer download do áudio. Por favor, tente novamente.');
+    }
   };
 
   const textToNarrate = doc.translatedText || doc.originalText;
