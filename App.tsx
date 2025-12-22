@@ -7,6 +7,10 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import StatCard from './components/StatCard';
 import AnalyticsModule from './components/AnalyticsModule';
+import TranslateModule from './components/TranslateModule';
+import SummaryModule from './components/SummaryModule';
+import InsightsModule from './components/InsightsModule';
+import AudioModule from './components/AudioModule';
 import { BentoGrid, BentoGridItem } from './components/BentoGrid';
 import AnalyticsChart from './components/AnalyticsChart';
 import ProgressIndicator from './components/ProgressIndicator';
@@ -52,6 +56,9 @@ const App: React.FC = () => {
   const [totalProcessed, setTotalProcessed] = useState(0);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [documentHistory, setDocumentHistory] = useState<any[]>([]);
+  const [summary, setSummary] = useState<string>('');
+  const [insights, setInsights] = useState<string>('');
+  const [audioGenerated, setAudioGenerated] = useState(false);
   
   // Progress & Toast States
   const [processStatus, setProcessStatus] = useState<ProcessStatus>('idle');
@@ -130,6 +137,12 @@ const App: React.FC = () => {
       title: filename,
       originalText: text,
     });
+    
+    // Reset processed data when new file is loaded
+    setSummary('');
+    setInsights('');
+    setAudioGenerated(false);
+    
     setActiveView('translate');
     setTotalProcessed(prev => prev + 1);
     
@@ -148,7 +161,7 @@ const App: React.FC = () => {
     addToast('success', 'Arquivo Carregado', `${filename} foi carregado com sucesso!`);
   };
 
-  const handleProcess = async () => {
+  const handleTranslate = async () => {
     if (!doc) return;
     setLoading(true);
     setProcessStatus('processing');
@@ -156,15 +169,11 @@ const App: React.FC = () => {
     const startTime = Date.now();
     
     try {
-      const mode = analysisType === AnalysisMode.FullTranslation ? 'translate' : 
-                   analysisType === AnalysisMode.Summary ? 'summarize' : 'analyze';
-      
-      // Simulate progress
       const progressInterval = setInterval(() => {
         setProcessProgress(prev => Math.min(prev + 10, 90));
       }, 200);
       
-      const result = await translateAndAnalyze(doc.originalText, selectedLang, mode);
+      const result = await translateAndAnalyze(doc.originalText, selectedLang, 'translate');
       
       clearInterval(progressInterval);
       setProcessProgress(100);
@@ -179,7 +188,6 @@ const App: React.FC = () => {
       const timeElapsed = (endTime - startTime) / 1000;
       setProcessingTime(timeElapsed);
       
-      // Update document history
       setDocumentHistory(prev => prev.map(d => 
         d.filename === doc.title && d.status === 'processing'
           ? { ...d, status: 'success' as const, processingTime: timeElapsed }
@@ -187,10 +195,125 @@ const App: React.FC = () => {
       ));
       
       setProcessStatus('success');
-      addToast('success', 'Processamento Concluído!', `Documento processado em ${timeElapsed.toFixed(1)}s`);
+      addToast('success', 'Tradução Concluída!', `Documento traduzido em ${timeElapsed.toFixed(1)}s`);
       
       setTimeout(() => setProcessStatus('idle'), 3000);
     } catch (err) {
+      console.error(err);
+      
+      setDocumentHistory(prev => prev.map(d => 
+        d.filename === doc.title && d.status === 'processing'
+          ? { ...d, status: 'error' as const, processingTime: 0 }
+          : d
+      ));
+      
+      setProcessStatus('error');
+      addToast('error', 'Erro na Tradução', 'Não foi possível traduzir o documento. Tente novamente.');
+      setTimeout(() => setProcessStatus('idle'), 5000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSummary = async () => {
+    if (!doc) return;
+    setLoading(true);
+    setProcessStatus('processing');
+    setProcessProgress(0);
+    const startTime = Date.now();
+    
+    try {
+      const progressInterval = setInterval(() => {
+        setProcessProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+      
+      const result = await translateAndAnalyze(doc.originalText, selectedLang, 'summarize');
+      
+      clearInterval(progressInterval);
+      setProcessProgress(100);
+      
+      setSummary(result);
+      
+      const endTime = Date.now();
+      const timeElapsed = (endTime - startTime) / 1000;
+      
+      setProcessStatus('success');
+      addToast('success', 'Resumo Gerado!', `Resumo criado em ${timeElapsed.toFixed(1)}s`);
+      
+      setTimeout(() => setProcessStatus('idle'), 3000);
+    } catch (err) {
+      console.error(err);
+      setProcessStatus('error');
+      addToast('error', 'Erro no Resumo', 'Não foi possível gerar o resumo. Tente novamente.');
+      setTimeout(() => setProcessStatus('idle'), 5000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInsights = async () => {
+    if (!doc) return;
+    setLoading(true);
+    setProcessStatus('processing');
+    setProcessProgress(0);
+    const startTime = Date.now();
+    
+    try {
+      const progressInterval = setInterval(() => {
+        setProcessProgress(prev => Math.min(prev + 10, 90));
+      }, 200);
+      
+      const result = await translateAndAnalyze(doc.originalText, selectedLang, 'analyze');
+      
+      clearInterval(progressInterval);
+      setProcessProgress(100);
+      
+      setInsights(result);
+      
+      const endTime = Date.now();
+      const timeElapsed = (endTime - startTime) / 1000;
+      
+      setProcessStatus('success');
+      addToast('success', 'Insights Extraídos!', `Análise concluída em ${timeElapsed.toFixed(1)}s`);
+      
+      setTimeout(() => setProcessStatus('idle'), 3000);
+    } catch (err) {
+      console.error(err);
+      setProcessStatus('error');
+      addToast('error', 'Erro nos Insights', 'Não foi possível extrair insights. Tente novamente.');
+      setTimeout(() => setProcessStatus('idle'), 5000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateAudio = async () => {
+    const textToRead = doc?.translatedText || doc?.originalText;
+    if (!textToRead) return;
+
+    setLoading(true);
+    setProcessStatus('processing');
+    addToast('info', 'Gerando Áudio', 'Convertendo texto em fala...');
+    
+    try {
+      const base64Audio = await generateSpeech(textToRead, selectedLang.code);
+      if (base64Audio) {
+        setAudioGenerated(true);
+        addToast('success', 'Áudio Gerado!', 'Conversão concluída com sucesso.');
+        setProcessStatus('success');
+        setTimeout(() => setProcessStatus('idle'), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      setProcessStatus('error');
+      addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
+      setTimeout(() => setProcessStatus('idle'), 5000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProcess = handleTranslate; // Mantém para compatibilidade {
       console.error(err);
       
       // Update document history with error
@@ -286,163 +409,64 @@ const App: React.FC = () => {
     </div>
   );
 
-  const renderDocument = () => {
-    if (!doc) return renderHome();
-
-    return (
-      <div className="space-y-6">
-        {/* Header with Actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-1">
-              {doc.title}
-            </h1>
-            <div className="flex items-center gap-2">
-              <Badge variant="info">
-                {doc.originalText.split(' ').length} palavras
-              </Badge>
-              {doc.targetLanguage && (
-                <Badge variant="success">
-                  Traduzido para {doc.targetLanguage}
-                </Badge>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <select 
-              value={selectedLang.code}
-              onChange={(e) => setSelectedLang(LANGUAGES.find(l => l.code === e.target.value) || LANGUAGES[0])}
-              className="bg-card border-2 border-border hover:border-primary rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
-            >
-              {LANGUAGES.map(lang => (
-                <option key={lang.code} value={lang.code}>{lang.flag} {lang.name}</option>
-              ))}
-            </select>
-            <Button 
-              onClick={handleProcess}
-              disabled={loading}
-              size="lg"
-              className="shadow-lg hover-lift"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                  Processando...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  Processar
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Analysis Type Selector */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Tipo de Análise</CardTitle>
-            <CardDescription>Escolha como processar o documento</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {[
-                { id: AnalysisMode.FullTranslation, label: 'Tradução Completa', icon: LanguagesIcon, desc: 'Tradução palavra por palavra' },
-                { id: AnalysisMode.Summary, label: 'Resumo Acadêmico', icon: BookOpen, desc: 'Resumo estruturado' },
-                { id: AnalysisMode.Insights, label: 'Principais Insights', icon: TrendingUp, desc: 'Pontos-chave do texto' },
-              ].map(type => {
-                const Icon = type.icon;
-                const isActive = analysisType === type.id;
-                
-                return (
-                  <button
-                    key={type.id}
-                    onClick={() => setAnalysisType(type.id)}
-                    className={`flex flex-col items-start gap-2 p-4 rounded-xl text-sm font-medium transition-all border-2 hover-lift ${
-                      isActive 
-                        ? 'border-primary brand-gradient text-white shadow-xl scale-105' 
-                        : 'border-border hover:border-primary/50 bg-card'
-                    }`}
-                  >
-                    <Icon className="w-6 h-6" />
-                    <div>
-                      <div className="font-semibold">{type.label}</div>
-                      <div className={`text-xs mt-1 ${isActive ? 'text-white/80' : 'text-muted-foreground'}`}>
-                        {type.desc}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Document Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Original */}
-          <Card className="h-[600px] flex flex-col">
-            <CardHeader className="border-b border-border">
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Documento Original
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-              <div className="academic-text text-foreground whitespace-pre-line">
-                {doc.originalText}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Processed */}
-          <Card className="h-[600px] flex flex-col">
-            <CardHeader className="border-b border-border flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <LanguagesIcon className="w-5 h-5" />
-                {analysisType === AnalysisMode.FullTranslation ? 'Tradução' : 'Análise'}
-              </CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleTTS}
-                disabled={isSpeaking || !doc.translatedText}
-              >
-                {isSpeaking ? (
-                  <>
-                    <Pause className="w-4 h-4 mr-2" />
-                    Pausar
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4 mr-2" />
-                    Ouvir
-                  </>
-                )}
-              </Button>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-              <div className="academic-text text-foreground whitespace-pre-line">
-                {doc.translatedText || (
-                  <div className="flex items-center justify-center h-full text-muted-foreground">
-                    <div className="text-center">
-                      <Volume2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                      <p>Clique em "Processar" para ver o resultado aqui</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  };
-
   const renderAnalytics = () => (
     <AnalyticsModule documents={documentHistory} />
   );
+
+  const renderTranslate = () => {
+    if (!doc) return renderHome();
+    return (
+      <TranslateModule
+        doc={doc}
+        selectedLang={selectedLang}
+        loading={loading}
+        onProcess={handleTranslate}
+        onLanguageChange={setSelectedLang}
+        languages={LANGUAGES}
+      />
+    );
+  };
+
+  const renderSummary = () => {
+    if (!doc) return renderHome();
+    return (
+      <SummaryModule
+        doc={doc}
+        loading={loading}
+        summary={summary}
+        onProcess={handleSummary}
+      />
+    );
+  };
+
+  const renderInsights = () => {
+    if (!doc) return renderHome();
+    return (
+      <InsightsModule
+        doc={doc}
+        loading={loading}
+        insights={insights}
+        onProcess={handleInsights}
+      />
+    );
+  };
+
+  const renderAudio = () => {
+    if (!doc) return renderHome();
+    return (
+      <AudioModule
+        doc={doc}
+        selectedLang={selectedLang}
+        loading={loading}
+        isSpeaking={isSpeaking}
+        audioGenerated={audioGenerated}
+        onProcess={handleGenerateAudio}
+        onPlayPause={handleTTS}
+        onLanguageChange={setSelectedLang}
+        languages={LANGUAGES}
+      />
+    );
+  };
 
   // Main App Content
   return (
@@ -516,9 +540,11 @@ const App: React.FC = () => {
 
         <div className="max-w-7xl mx-auto">
           {activeView === 'home' && renderHome()}
-          {(activeView === 'translate' || activeView === 'summary' || activeView === 'insights') && renderDocument()}
+          {activeView === 'translate' && renderTranslate()}
+          {activeView === 'summary' && renderSummary()}
+          {activeView === 'insights' && renderInsights()}
+          {activeView === 'audio' && renderAudio()}
           {activeView === 'analytics' && renderAnalytics()}
-          {activeView === 'audio' && doc && renderDocument()}
         </div>
       </main>
 
