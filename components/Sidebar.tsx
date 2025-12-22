@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Logo size="sm" animated={false} />
           <div>
             <h1 className="text-xl font-bold">
-              <span className="text-gradient">LumiVox</span>
+              <span className="text-gradient">IluminaVox</span>
             </h1>
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <Sparkles className="w-3 h-3" />

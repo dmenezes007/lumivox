@@ -94,9 +94,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           <div className="relative group">
             <div className="absolute inset-0 blur-2xl opacity-60 bg-gradient-to-r from-amber-400 to-purple-500 rounded-full" />
             <img 
-              src="/logo.png" 
-              alt="LumiVox" 
-              className="relative w-32 h-32 drop-shadow-2xl rounded-3xl transform group-hover:scale-105 transition-transform duration-300"
+              src="/iluminavox-logo.svg" 
+              alt="IluminaVox" 
+              className="relative w-32 h-32 drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-300"
             />
           </div>
         </div>

@@ -208,7 +208,7 @@ const App: React.FC = () => {
     <div className="space-y-6">
       <div className="mb-8">
         <h1 className="text-5xl font-bold mb-3">
-          <span className="text-gradient">Bem-vindo ao LumiVox</span>
+          <span className="text-gradient">Bem-vindo ao IluminaVox</span>
           <Sparkles className="inline-block w-8 h-8 ml-2 text-primary animate-pulse" />
         </h1>
         <p className="text-xl text-muted-foreground">
@@ -539,7 +539,7 @@ const App: React.FC = () => {
 
       <footer className="ml-64 border-t border-border bg-card/50 backdrop-blur-sm py-6 text-center text-sm text-muted-foreground">
         <p className="flex items-center justify-center gap-2">
-          &copy; 2024 LumiVox - Powered by 
+          &copy; 2024 IluminaVox - Powered by 
           <span className="font-semibold text-gradient">Gemini AI</span>
           <Sparkles className="w-4 h-4 text-primary" />
         </p>

@@ -1,4 +1,4 @@
-# 🔐 Guia de Configuração Firebase - LumiVox
+# 🔐 Guia de Configuração Firebase - IluminaVox
 
 ## 🚀 Passo a Passo
 
@@ -6,7 +6,7 @@
 
 1. Acesse [Firebase Console](https://console.firebase.google.com/)
 2. Clique em **"Adicionar projeto"**
-3. Nome do projeto: `lumivox` (ou outro nome)
+3. Nome do projeto: `iluminavox` (ou outro nome)
 4. Desabilite Google Analytics (opcional)
 5. Clique em **"Criar projeto"**
 
@@ -34,22 +34,22 @@
 3. Na aba **"Geral"**, role até **"Seus aplicativos"**
 4. Clique no ícone **"</>"** (Web)
 5. Registre o app:
-   - Apelido: `lumivox-web`
+   - Apelido: `iluminavox-web`
    - **NÃO** marque Firebase Hosting
    - Clique em **"Registrar app"**
 
 6. **Copie as credenciais** que aparecem:
 
-\`\`\`javascript
+```javascript
 const firebaseConfig = {
   apiKey: "AIza...",
-  authDomain: "lumivox-xxxxx.firebaseapp.com",
-  projectId: "lumivox-xxxxx",
-  storageBucket: "lumivox-xxxxx.appspot.com",
+  authDomain: "iluminavox-xxxxx.firebaseapp.com",
+  projectId: "iluminavox-xxxxx",
+  storageBucket: "iluminavox-xxxxx.appspot.com",
   messagingSenderId: "123456789",
   appId: "1:123456789:web:xxxxx"
 };
-\`\`\`
+```
 
 ### 4. Configurar Variáveis de Ambiente
 
@@ -57,22 +57,22 @@ const firebaseConfig = {
 
 Crie o arquivo \`.env\` na raiz do projeto:
 
-\`\`\`env
+```env
 VITE_FIREBASE_API_KEY=AIza...
-VITE_FIREBASE_AUTH_DOMAIN=lumivox-xxxxx.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=lumivox-xxxxx
-VITE_FIREBASE_STORAGE_BUCKET=lumivox-xxxxx.appspot.com
+VITE_FIREBASE_AUTH_DOMAIN=iluminavox-xxxxx.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=iluminavox-xxxxx
+VITE_FIREBASE_STORAGE_BUCKET=iluminavox-xxxxx.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
 VITE_FIREBASE_APP_ID=1:123456789:web:xxxxx
 
 # Gemini API (já configurado)
 GEMINI_API_KEY=your_existing_key
-\`\`\`
+```
 
 #### Produção (Vercel):
 
 1. Acesse [Vercel Dashboard](https://vercel.com/dashboard)
-2. Selecione seu projeto **lumivox**
+2. Selecione seu projeto **iluminavox**
 3. Vá em **Settings** → **Environment Variables**
 4. Adicione cada variável:
    - \`VITE_FIREBASE_API_KEY\`

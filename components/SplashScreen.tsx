@@ -58,9 +58,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             {/* Logo PNG */}
             <div className="relative">
               <img 
-                src="/logo.png" 
-                alt="LumiVox" 
-                className="w-48 h-48 drop-shadow-2xl rounded-3xl"
+                src="/iluminavox-logo.svg" 
+                alt="IluminaVox" 
+                className="w-48 h-48 drop-shadow-2xl"
               />
             </div>
           </div>
@@ -70,12 +70,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         <div className="space-y-4">
           <h1 className="text-7xl font-black tracking-tight">
             <span className="inline-block bg-gradient-to-r from-amber-300 via-amber-400 to-purple-400 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-              LumiVox
+              IluminaVox
             </span>
           </h1>
           <p className="text-2xl text-gray-300 font-light flex items-center justify-center gap-3">
             <Sparkles className="w-6 h-6 text-amber-400 animate-pulse" />
-            AI-Powered Document Intelligence
+            Assistente Inteligente de Documentos
             <Sparkles className="w-6 h-6 text-purple-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
           </p>
         </div>
