@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Mail, Lock, ArrowRight, Chrome, Github } from 'lucide-react';
 import { Button } from './ui/button';
+import Logo from './Logo';
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -96,13 +97,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           <div className="glass-card p-8 lg:p-10 rounded-3xl border border-white/10 backdrop-blur-xl bg-white/5 shadow-2xl">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-purple-600 flex items-center justify-center shadow-lg mb-4 hover-lift">
-                <img 
-                  src="/logo.svg" 
-                  alt="LumiVox" 
-                  className="w-12 h-12"
-                  style={{ filter: 'brightness(0) invert(1)' }}
-                />
+              <div className="flex justify-center mb-4">
+                <Logo size="md" animated={true} />
               </div>
               <h2 className="text-3xl font-bold text-white mb-2">Bem-vindo de volta</h2>
               <p className="text-gray-400">Entre para continuar sua jornada</p>

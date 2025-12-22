@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, Zap } from 'lucide-react';
+import Logo from './Logo';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -55,17 +56,9 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 animate-spin-slow" />
             </div>
             
-            {/* Logo Container with Glass Effect */}
-            <div className="relative w-52 h-52 rounded-3xl bg-gradient-to-br from-amber-400/20 via-purple-500/20 to-amber-400/20 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl">
-              <img 
-                src="/logo.svg" 
-                alt="LumiVox" 
-                className="w-36 h-36 transition-transform duration-500"
-                style={{ 
-                  filter: 'drop-shadow(0 0 30px rgba(228, 155, 16, 0.8)) brightness(1.2)',
-                  transform: isHovering ? 'scale(1.1)' : 'scale(1)'
-                }}
-              />
+            {/* Logo Component */}
+            <div className="relative">
+              <Logo size="xl" animated={true} />
             </div>
           </div>
         </div>

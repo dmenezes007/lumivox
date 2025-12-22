@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
+import Logo from './Logo';
 
 export interface SidebarProps {
   activeView?: string;
@@ -41,17 +42,10 @@ const Sidebar: React.FC<SidebarProps> = ({
       "fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col shadow-xl",
       className
     )}>
-      {/* Logo - Usando imagem SVG */}
+      {/* Logo Component */}
       <div className="p-6 border-b border-border bg-gradient-to-br from-card to-muted/20">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 brand-gradient rounded-xl flex items-center justify-center shadow-lg hover-lift">
-            <img 
-              src="/logo.svg" 
-              alt="LumiVox Logo" 
-              className="w-8 h-8"
-              style={{ filter: 'brightness(0) invert(1)' }}
-            />
-          </div>
+          <Logo size="sm" animated={false} />
           <div>
             <h1 className="text-xl font-bold">
               <span className="text-gradient">LumiVox</span>
