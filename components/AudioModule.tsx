@@ -34,19 +34,33 @@ const AudioModule: React.FC<AudioModuleProps> = ({
     if (!audioGenerated || !audioBase64) return;
     
     try {
-      // Decode base64 to binary
+      // Decode base64 to PCM audio data
       const binaryString = atob(audioBase64);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
+      const len = binaryString.length;
+      const pcmData = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        pcmData[i] = binaryString.charCodeAt(i);
       }
       
-      // Create blob with proper MP3 MIME type
-      const blob = new Blob([bytes], { type: 'audio/mpeg' });
+      // Convert PCM to WAV format
+      const sampleRate = 24000; // Sample rate from Gemini TTS
+      const numChannels = 1; // Mono
+      const bitsPerSample = 16;
+      
+      // Create WAV header
+      const wavHeader = createWavHeader(pcmData.length, sampleRate, numChannels, bitsPerSample);
+      
+      // Combine header and PCM data
+      const wavData = new Uint8Array(wavHeader.length + pcmData.length);
+      wavData.set(wavHeader, 0);
+      wavData.set(pcmData, wavHeader.length);
+      
+      // Create blob with proper WAV MIME type
+      const blob = new Blob([wavData], { type: 'audio/wav' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_audio.mp3`;
+      a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_audio.wav`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -54,6 +68,46 @@ const AudioModule: React.FC<AudioModuleProps> = ({
     } catch (error) {
       console.error('Erro ao fazer download do áudio:', error);
       alert('Erro ao fazer download do áudio. Por favor, tente novamente.');
+    }
+  };
+
+  // Helper function to create WAV header
+  const createWavHeader = (
+    dataLength: number,
+    sampleRate: number,
+    numChannels: number,
+    bitsPerSample: number
+  ): Uint8Array => {
+    const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
+    const blockAlign = (numChannels * bitsPerSample) / 8;
+    const header = new ArrayBuffer(44);
+    const view = new DataView(header);
+
+    // "RIFF" chunk descriptor
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + dataLength, true);
+    writeString(view, 8, 'WAVE');
+
+    // "fmt " sub-chunk
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true); // Sub-chunk size
+    view.setUint16(20, 1, true); // Audio format (1 = PCM)
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitsPerSample, true);
+
+    // "data" sub-chunk
+    writeString(view, 36, 'data');
+    view.setUint32(40, dataLength, true);
+
+    return new Uint8Array(header);
+  };
+
+  const writeString = (view: DataView, offset: number, string: string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
     }
   };
 
@@ -150,7 +204,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
                 className="gap-2"
               >
                 <Download className="w-4 h-4" />
-                Download MP3
+                Download WAV
               </Button>
             )}
           </CardHeader>
