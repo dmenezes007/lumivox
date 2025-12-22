@@ -242,7 +242,7 @@ const App: React.FC = () => {
     <div className="space-y-6">
       <div className="mb-8">
         <h1 className="text-5xl font-bold mb-3">
-          <span className="text-gradient">Bem-vindo ao IluminaMind</span>
+          <span className="text-gradient">Bem-vindo ao IluminaVox</span>
           <Sparkles className="inline-block w-8 h-8 ml-2 text-primary animate-pulse" />
         </h1>
         <p className="text-xl text-muted-foreground">
@@ -527,7 +527,7 @@ const App: React.FC = () => {
         isSidebarCollapsed ? "ml-20" : "ml-64"
       )}>
         <p className="flex items-center justify-center gap-2">
-          &copy; 2024 IluminaMind - Powered by 
+          &copy; 2025 IluminaVox - Powered by
           <span className="font-semibold text-gradient">Gemini AI</span>
           <Sparkles className="w-4 h-4 text-primary" />
         </p>
