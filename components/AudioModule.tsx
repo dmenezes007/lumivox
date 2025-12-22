@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { FileText, Volume2, Download, Loader2, Play, Pause, Sparkles } from 'lucide-react';
+import { FileText, Volume2, Loader2, Play, Pause, Sparkles } from 'lucide-react';
 import { DocumentContent, Language } from '../types';
 
 interface AudioModuleProps {
@@ -11,7 +11,6 @@ interface AudioModuleProps {
   loading: boolean;
   isSpeaking: boolean;
   audioGenerated: boolean;
-  audioBase64?: string;
   onProcess: () => void;
   onPlayPause: () => void;
   onLanguageChange: (lang: Language) => void;
@@ -24,109 +23,11 @@ const AudioModule: React.FC<AudioModuleProps> = ({
   loading,
   isSpeaking,
   audioGenerated,
-  audioBase64,
   onProcess,
   onPlayPause,
   onLanguageChange,
   languages
 }) => {
-  const handleDownload = () => {
-    if (!audioGenerated || !audioBase64) {
-      console.warn('Download cancelado: áudio não gerado ou base64 vazio');
-      return;
-    }
-    
-    try {
-      console.log('Iniciando download de áudio...');
-      console.log('Tamanho do base64:', audioBase64.length);
-      
-      // Decode base64 to raw bytes
-      const binaryString = atob(audioBase64);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      
-      console.log('Bytes decodificados:', bytes.length);
-      
-      // Audio specs from Gemini TTS API
-      const sampleRate = 24000;
-      const numChannels = 1;
-      const bitsPerSample = 16;
-      
-      // Create WAV header
-      const wavHeader = createWavHeader(bytes.length, sampleRate, numChannels, bitsPerSample);
-      console.log('Header WAV criado:', wavHeader.length, 'bytes');
-      
-      // Combine header and audio data
-      const wavData = new Uint8Array(wavHeader.length + bytes.length);
-      wavData.set(wavHeader, 0);
-      wavData.set(bytes, wavHeader.length);
-      
-      console.log('Arquivo WAV total:', wavData.length, 'bytes');
-      
-      // Create downloadable blob
-      const blob = new Blob([wavData.buffer], { type: 'audio/wav' });
-      console.log('Blob criado:', blob.size, 'bytes, tipo:', blob.type);
-      
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${doc.title.replace(/\.[^/.]+$/, '')}_audio.wav`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      console.log('✅ Download iniciado com sucesso!');
-    } catch (error) {
-      console.error('❌ Erro ao fazer download do áudio:', error);
-      alert('Erro ao fazer download do áudio. Por favor, tente novamente.');
-    }
-  };
-
-  // Helper function to write string to DataView
-  const writeString = (view: DataView, offset: number, string: string) => {
-    for (let i = 0; i < string.length; i++) {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
-  };
-
-  // Helper function to create WAV header
-  const createWavHeader = (
-    dataLength: number,
-    sampleRate: number,
-    numChannels: number,
-    bitsPerSample: number
-  ): Uint8Array => {
-    const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
-    const blockAlign = (numChannels * bitsPerSample) / 8;
-    const header = new ArrayBuffer(44);
-    const view = new DataView(header);
-
-    // "RIFF" chunk descriptor
-    writeString(view, 0, 'RIFF');
-    view.setUint32(4, 36 + dataLength, true);
-    writeString(view, 8, 'WAVE');
-
-    // "fmt " sub-chunk
-    writeString(view, 12, 'fmt ');
-    view.setUint32(16, 16, true); // Sub-chunk size
-    view.setUint16(20, 1, true); // Audio format (1 = PCM)
-    view.setUint16(22, numChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, byteRate, true);
-    view.setUint16(32, blockAlign, true);
-    view.setUint16(34, bitsPerSample, true);
-
-    // "data" sub-chunk
-    writeString(view, 36, 'data');
-    view.setUint32(40, dataLength, true);
-
-    return new Uint8Array(header);
-  };
-
   const textToNarrate = doc.translatedText || doc.originalText;
 
   return (
@@ -161,12 +62,12 @@ const AudioModule: React.FC<AudioModuleProps> = ({
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Gerando Áudio...
+                Preparando...
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                Gerar Áudio
+                Preparar Áudio
               </>
             )}
           </Button>
@@ -183,14 +84,14 @@ const AudioModule: React.FC<AudioModuleProps> = ({
         </Badge>
         {audioGenerated && (
           <Badge variant="success">
-            Áudio gerado
+            Áudio pronto
           </Badge>
         )}
         
-        {/* Quota Warning */}
+        {/* Browser TTS Info */}
         <div className="ml-auto">
-          <Badge variant="warning" className="text-xs">
-            ⚠️ Limite: 10 áudios/dia (tier gratuito)
+          <Badge variant="default" className="text-xs">
+            ✨ Narração nativa do navegador (ilimitada)
           </Badge>
         </div>
       </div>
@@ -214,22 +115,11 @@ const AudioModule: React.FC<AudioModuleProps> = ({
 
         {/* Audio Player */}
         <Card className="h-[600px] flex flex-col">
-          <CardHeader className="border-b border-border flex flex-row items-center justify-between">
+          <CardHeader className="border-b border-border">
             <CardTitle className="flex items-center gap-2">
               <Volume2 className="w-5 h-5 text-primary" />
-              Áudio Completo
+              Reprodutor de Áudio
             </CardTitle>
-            {audioGenerated && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDownload}
-                className="gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Download WAV
-              </Button>
-            )}
           </CardHeader>
           <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin">
             {audioGenerated ? (

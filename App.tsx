@@ -18,7 +18,7 @@ import { ToastContainer, ToastProps } from './components/Toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
-import { translateAndAnalyze, generateSpeech, decode, decodeAudioData } from './services/geminiService';
+import { translateAndAnalyze } from './services/geminiService';
 import { isDemoMode } from './services/mockService';
 import { useAuth } from './hooks/useAuth';
 import { cn } from './lib/utils';
@@ -59,7 +59,6 @@ const App: React.FC = () => {
   const [summary, setSummary] = useState<string>('');
   const [insights, setInsights] = useState<string>('');
   const [audioGenerated, setAudioGenerated] = useState(false);
-  const [audioSource, setAudioSource] = useState<AudioBufferSourceNode | null>(null);
   const [generatedAudioBase64, setGeneratedAudioBase64] = useState<string>('');
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   
@@ -321,38 +320,30 @@ const App: React.FC = () => {
     const textToRead = doc?.translatedText || doc?.originalText;
     if (!textToRead) return;
 
+    // Usar Web Speech API nativa (gratuita e ilimitada)
+    if (!('speechSynthesis' in window)) {
+      addToast('error', 'Navegador Incompatível', 'Seu navegador não suporta síntese de voz. Use Chrome, Edge ou Safari.');
+      return;
+    }
+
     setLoading(true);
     setProcessStatus('processing');
-    addToast('info', 'Gerando Áudio', 'Convertendo texto em fala...');
+    addToast('info', 'Preparando Áudio', 'Configurando narração...');
     
     try {
-      const base64Audio = await generateSpeech(textToRead, selectedLang.code);
-      if (base64Audio && base64Audio.length > 0) {
-        console.log('✅ Áudio gerado com sucesso, tamanho:', base64Audio.length);
-        setGeneratedAudioBase64(base64Audio);
-        setAudioGenerated(true);
-        addToast('success', 'Áudio Gerado!', 'Conversão concluída com sucesso.');
-        setProcessStatus('success');
-        setUnreadNotifications(prev => prev + 1);
-        setTimeout(() => setProcessStatus('idle'), 3000);
-      } else {
-        console.warn('⚠️ API não retornou áudio válido');
-        setProcessStatus('error');
-        addToast('error', 'Áudio não disponível', 'Configure a API Key do Gemini para usar esta funcionalidade.');
-        setTimeout(() => setProcessStatus('idle'), 5000);
-      }
+      // Simular um pequeno delay para feedback visual
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      setGeneratedAudioBase64('NATIVE_TTS'); // Marker para indicar que usa TTS nativo
+      setAudioGenerated(true);
+      addToast('success', 'Áudio Pronto!', 'Use o botão Play para ouvir a narração.');
+      setProcessStatus('success');
+      setUnreadNotifications(prev => prev + 1);
+      setTimeout(() => setProcessStatus('idle'), 3000);
     } catch (err) {
-      console.error('❌ Erro ao gerar áudio:', err);
-      
-      // Tratamento específico para erro de quota
-      if (err?.message === 'QUOTA_EXCEEDED') {
-        setProcessStatus('error');
-        addToast('error', 'Limite de Quota Excedido', 'Você atingiu o limite de 10 áudios/dia. Aguarde 24h ou atualize seu plano.');
-      } else {
-        setProcessStatus('error');
-        addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
-      }
-      
+      console.error('❌ Erro ao preparar áudio:', err);
+      setProcessStatus('error');
+      addToast('error', 'Erro no Áudio', 'Não foi possível preparar o áudio.');
       setTimeout(() => setProcessStatus('idle'), 5000);
     } finally {
       setLoading(false);
@@ -362,59 +353,78 @@ const App: React.FC = () => {
   const handleProcess = handleTranslate; // Mantém para compatibilidade
 
   const handleTTS = async () => {
+    const textToRead = doc?.translatedText || doc?.originalText;
+    if (!textToRead) return;
+
+    // Verificar suporte do navegador
+    if (!('speechSynthesis' in window)) {
+      addToast('error', 'Navegador Incompatível', 'Seu navegador não suporta síntese de voz. Use Chrome, Edge ou Safari.');
+      return;
+    }
+
     if (isSpeaking) {
-      // Pause/Stop
-      if (audioSource) {
-        audioSource.stop();
-        setAudioSource(null);
-      }
+      // Parar leitura
+      window.speechSynthesis.cancel();
       setIsSpeaking(false);
       addToast('info', 'Áudio Pausado', 'A reprodução foi interrompida.');
       return;
     }
 
-    const textToRead = doc?.translatedText || doc?.originalText;
-    if (!textToRead) return;
-
     setIsSpeaking(true);
-    addToast('info', 'Gerando Áudio', 'Convertendo texto em fala...');
+    addToast('info', 'Iniciando Reprodução', 'Preparando narração...');
     
     try {
-      const base64Audio = await generateSpeech(textToRead, selectedLang.code);
-      if (base64Audio && base64Audio.length > 0) {
-        console.log('🎵 Iniciando reprodução de áudio...');
-        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
-        const decodedBytes = decode(base64Audio);
-        console.log('📦 Bytes decodificados:', decodedBytes.length);
-        const buffer = await decodeAudioData(decodedBytes, audioCtx, 24000, 1);
-        console.log('🎚️ Buffer criado, duração:', buffer.duration, 'segundos');
-        const source = audioCtx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(audioCtx.destination);
-        source.onended = () => {
-          setIsSpeaking(false);
-          setAudioSource(null);
-          addToast('success', 'Áudio Concluído', 'A reprodução foi finalizada.');
-        };
-        source.start();
-        setAudioSource(source);
+      // Limpar texto para leitura
+      const cleanText = textToRead
+        .replace(/<[^>]*>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      // Limitar tamanho (navegadores têm limite)
+      const maxLength = 4000;
+      const finalText = cleanText.length > maxLength 
+        ? cleanText.substring(0, maxLength) + '... Texto muito longo, leitura truncada.'
+        : cleanText;
+
+      const utterance = new SpeechSynthesisUtterance(finalText);
+      
+      // Configurar voz baseado no idioma selecionado
+      const voices = window.speechSynthesis.getVoices();
+      const langCode = selectedLang.code === 'pt' ? 'pt-BR' : 
+                       selectedLang.code === 'en' ? 'en-US' :
+                       selectedLang.code === 'es' ? 'es-ES' :
+                       selectedLang.code === 'fr' ? 'fr-FR' : 'pt-BR';
+      
+      const voice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
+      if (voice) utterance.voice = voice;
+      
+      utterance.lang = langCode;
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      utterance.onstart = () => {
+        console.log('🎵 Iniciando reprodução...');
         addToast('success', 'Reproduzindo Áudio', 'O texto está sendo narrado.');
-      } else {
-        console.warn('⚠️ Áudio não disponível');
+      };
+      
+      utterance.onend = () => {
+        console.log('✅ Reprodução concluída');
         setIsSpeaking(false);
-        addToast('error', 'Áudio não disponível', 'Configure a API Key do Gemini para usar esta funcionalidade.');
-      }
+        addToast('success', 'Áudio Concluído', 'A reprodução foi finalizada.');
+      };
+      
+      utterance.onerror = (event) => {
+        console.error('❌ Erro na reprodução:', event);
+        setIsSpeaking(false);
+        addToast('error', 'Erro no Áudio', 'Não foi possível reproduzir o áudio.');
+      };
+
+      window.speechSynthesis.speak(utterance);
     } catch (err) {
       console.error('❌ Erro na reprodução:', err);
       setIsSpeaking(false);
-      setAudioSource(null);
-      
-      // Tratamento específico para erro de quota
-      if (err?.message === 'QUOTA_EXCEEDED') {
-        addToast('error', 'Limite de Quota Excedido', 'Você atingiu o limite de 10 áudios/dia da API Gemini TTS. Aguarde 24h.');
-      } else {
-        addToast('error', 'Erro no Áudio', 'Não foi possível reproduzir o áudio.');
-      }
+      addToast('error', 'Erro no Áudio', 'Não foi possível reproduzir o áudio.');
     }
   };
 
@@ -517,7 +527,6 @@ const App: React.FC = () => {
         loading={loading}
         isSpeaking={isSpeaking}
         audioGenerated={audioGenerated}
-        audioBase64={generatedAudioBase64}
         onProcess={handleGenerateAudio}
         onPlayPause={handleTTS}
         onLanguageChange={setSelectedLang}
