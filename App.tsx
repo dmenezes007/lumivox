@@ -343,8 +343,16 @@ const App: React.FC = () => {
       }
     } catch (err) {
       console.error('❌ Erro ao gerar áudio:', err);
-      setProcessStatus('error');
-      addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
+      
+      // Tratamento específico para erro de quota
+      if (err?.message === 'QUOTA_EXCEEDED') {
+        setProcessStatus('error');
+        addToast('error', 'Limite de Quota Excedido', 'Você atingiu o limite de 10 áudios/dia. Aguarde 24h ou atualize seu plano.');
+      } else {
+        setProcessStatus('error');
+        addToast('error', 'Erro no Áudio', 'Não foi possível gerar o áudio.');
+      }
+      
       setTimeout(() => setProcessStatus('idle'), 5000);
     } finally {
       setLoading(false);
@@ -400,7 +408,13 @@ const App: React.FC = () => {
       console.error('❌ Erro na reprodução:', err);
       setIsSpeaking(false);
       setAudioSource(null);
-      addToast('error', 'Erro no Áudio', 'Não foi possível reproduzir o áudio.');
+      
+      // Tratamento específico para erro de quota
+      if (err?.message === 'QUOTA_EXCEEDED') {
+        addToast('error', 'Limite de Quota Excedido', 'Você atingiu o limite de 10 áudios/dia da API Gemini TTS. Aguarde 24h.');
+      } else {
+        addToast('error', 'Erro no Áudio', 'Não foi possível reproduzir o áudio.');
+      }
     }
   };
 

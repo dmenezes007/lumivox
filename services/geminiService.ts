@@ -96,7 +96,17 @@ export const generateSpeech = async (text: string, languageCode: string) => {
     
     console.log('✅ Áudio gerado com sucesso, tamanho:', base64Audio.length);
     return base64Audio;
-  } catch (error) {
+  } catch (error: any) {
+    // Tratamento específico para erro de quota
+    if (error?.message?.includes('429') || error?.message?.includes('quota') || error?.message?.includes('RESOURCE_EXHAUSTED')) {
+      console.error('🚫 Limite de quota da API Gemini TTS excedido');
+      console.warn('📊 Limite gratuito: 10 requisições/dia');
+      console.info('💡 Aguarde 24h ou atualize para plano pago');
+      
+      // Retorna erro específico que será tratado no App
+      throw new Error('QUOTA_EXCEEDED');
+    }
+    
     console.error('❌ Erro ao gerar áudio com API:', error);
     return null;
   }

@@ -174,7 +174,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
       </div>
 
       {/* Info */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="info">
           {textToNarrate.split(' ').length} palavras
         </Badge>
@@ -186,6 +186,13 @@ const AudioModule: React.FC<AudioModuleProps> = ({
             Áudio gerado
           </Badge>
         )}
+        
+        {/* Quota Warning */}
+        <div className="ml-auto">
+          <Badge variant="warning" className="text-xs">
+            ⚠️ Limite: 10 áudios/dia (tier gratuito)
+          </Badge>
+        </div>
       </div>
 
       {/* Document Content */}
