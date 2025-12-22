@@ -313,23 +313,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleProcess = handleTranslate; // Mantém para compatibilidade {
-      console.error(err);
-      
-      // Update document history with error
-      setDocumentHistory(prev => prev.map(d => 
-        d.filename === doc.title && d.status === 'processing'
-          ? { ...d, status: 'error' as const, processingTime: 0 }
-          : d
-      ));
-      
-      setProcessStatus('error');
-      addToast('error', 'Erro no Processamento', 'Não foi possível processar o documento. Tente novamente.');
-      setTimeout(() => setProcessStatus('idle'), 5000);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleProcess = handleTranslate; // Mantém para compatibilidade
 
   const handleTTS = async () => {
     const textToRead = doc?.translatedText || doc?.originalText;
