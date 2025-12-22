@@ -14,10 +14,10 @@ const Logo: React.FC<LogoProps> = ({
   className = '' 
 }) => {
   const sizes = {
-    sm: { container: 'h-12 w-12', text: 'text-[6px]', bird: 'w-4 h-4' },
-    md: { container: 'h-20 w-20', text: 'text-[10px]', bird: 'w-6 h-6' },
-    lg: { container: 'h-28 w-28', text: 'text-xs', bird: 'w-8 h-8' },
-    xl: { container: 'h-40 w-40', text: 'text-sm', bird: 'w-12 h-12' }
+    sm: { container: 'h-12 w-12', text: 'text-[6px]', icon: 'w-5 h-5' },
+    md: { container: 'h-20 w-20', text: 'text-[10px]', icon: 'w-8 h-8' },
+    lg: { container: 'h-28 w-28', text: 'text-xs', icon: 'w-12 h-12' },
+    xl: { container: 'h-40 w-40', text: 'text-sm', icon: 'w-16 h-16' }
   };
 
   const currentSize = sizes[size];
@@ -40,42 +40,30 @@ const Logo: React.FC<LogoProps> = ({
             
             {/* Content Container */}
             <div className="flex flex-col items-center justify-center gap-0 relative z-10">
-              {/* Bird Icon */}
+              {/* Microphone Icon */}
               <svg 
-                viewBox="0 0 100 100" 
-                className={currentSize.bird}
+                viewBox="0 0 24 24" 
+                className={currentSize.icon}
                 fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ color: '#3B2667' }}
               >
-                {/* Detailed bird */}
-                <g transform="translate(50, 35)">
-                  {/* Head */}
-                  <ellipse cx="0" cy="0" rx="10" ry="12" fill="#3B2667" />
-                  
-                  {/* Eyes */}
-                  <circle cx="-4" cy="-2" r="2" fill="white" />
-                  <circle cx="4" cy="-2" r="2" fill="white" />
-                  <circle cx="-3.5" cy="-2" r="1" fill="#E49B10" />
-                  <circle cx="4.5" cy="-2" r="1" fill="#E49B10" />
-                  
-                  {/* Beak */}
-                  <path d="M 0,-6 L -2,-8 L 2,-8 Z" fill="#E49B10" />
-                  
-                  {/* Body */}
-                  <ellipse cx="0" cy="15" rx="14" ry="16" fill="#3B2667" />
-                  
-                  {/* Wings */}
-                  <path d="M -10,10 Q -20,12 -22,18 Q -20,16 -12,14 Z" fill="#4B3677" />
-                  <path d="M 10,10 Q 20,12 22,18 Q 20,16 12,14 Z" fill="#4B3677" />
-                  
-                  {/* Tail */}
-                  <path d="M -4,28 L -6,35 L -2,32 Z" fill="#3B2667" />
-                  <path d="M 4,28 L 6,35 L 2,32 Z" fill="#3B2667" />
-                  <path d="M 0,28 L 0,36 Z" stroke="#3B2667" strokeWidth="2" />
-                  
-                  {/* Feet */}
-                  <path d="M -6,30 L -6,34 M -6,34 L -8,35 M -6,34 L -4,35" stroke="#E49B10" strokeWidth="1" fill="none" />
-                  <path d="M 6,30 L 6,34 M 6,34 L 8,35 M 6,34 L 4,35" stroke="#E49B10" strokeWidth="1" fill="none" />
-                </g>
+                {/* Microphone capsule */}
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" fill="#3B2667" stroke="#E49B10" />
+                
+                {/* Sound waves left */}
+                <path d="M5 10v2a7 7 0 0 0 14 0v-2" stroke="#E49B10" strokeWidth="2.5" fill="none" />
+                <path d="M3 9v3a9 9 0 0 0 18 0V9" stroke="#E49B10" strokeWidth="1.5" fill="none" opacity="0.6" />
+                
+                {/* Stand */}
+                <line x1="12" y1="19" x2="12" y2="23" stroke="#3B2667" strokeWidth="2.5" />
+                <line x1="8" y1="23" x2="16" y2="23" stroke="#3B2667" strokeWidth="2.5" strokeLinecap="round" />
+                
+                {/* Highlights on mic */}
+                <ellipse cx="10.5" cy="4" rx="1" ry="2" fill="#E49B10" opacity="0.5" />
               </svg>
 
               {/* Text Labels */}
