@@ -11,6 +11,22 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID
 };
 
+// Validação de configuração (apenas em desenvolvimento)
+if (import.meta.env.DEV) {
+  console.log('🔥 Firebase Config Status:');
+  console.log('API Key:', firebaseConfig.apiKey ? '✅ Configurado' : '❌ Faltando');
+  console.log('Auth Domain:', firebaseConfig.authDomain ? '✅ Configurado' : '❌ Faltando');
+  console.log('Project ID:', firebaseConfig.projectId ? '✅ Configurado' : '❌ Faltando');
+  
+  if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
+    console.error('⚠️ FIREBASE NÃO CONFIGURADO! Crie um arquivo .env com as variáveis:');
+    console.error('VITE_FIREBASE_API_KEY=...');
+    console.error('VITE_FIREBASE_AUTH_DOMAIN=...');
+    console.error('VITE_FIREBASE_PROJECT_ID=...');
+    console.error('Consulte FIREBASE_SETUP.md para mais informações.');
+  }
+}
+
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 

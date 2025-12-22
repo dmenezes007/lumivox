@@ -15,7 +15,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const [localError, setLocalError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login, signup, loginWithGoogle, error: authError } = useAuth();
+  const { login, signup, loginWithGoogle, resetPassword, error: authError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,17 +30,31 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       }
       onLoginSuccess();
     } catch (err: any) {
+      console.error('Erro de autenticação:', err);
+      console.error('Código do erro:', err.code);
+      console.error('Mensagem do erro:', err.message);
+      
       const errorMessage = err.code === 'auth/user-not-found' 
-        ? 'Usuário não encontrado'
+        ? 'Usuário não encontrado. Verifique o email.'
         : err.code === 'auth/wrong-password'
-        ? 'Senha incorreta'
+        ? 'Senha incorreta. Tente novamente.'
         : err.code === 'auth/email-already-in-use'
-        ? 'Email já cadastrado'
+        ? 'Email já cadastrado. Tente fazer login.'
         : err.code === 'auth/weak-password'
         ? 'Senha muito fraca (mínimo 6 caracteres)'
         : err.code === 'auth/invalid-email'
-        ? 'Email inválido'
-        : 'Erro ao processar. Tente novamente.';
+        ? 'Email inválido. Verifique o formato.'
+        : err.code === 'auth/invalid-credential'
+        ? 'Credenciais inválidas. Verifique email e senha.'
+        : err.code === 'auth/network-request-failed'
+        ? 'Erro de conexão. Verifique sua internet.'
+        : err.code === 'auth/too-many-requests'
+        ? 'Muitas tentativas. Aguarde alguns minutos.'
+        : err.code === 'auth/configuration-not-found'
+        ? 'Firebase não configurado. Verifique as variáveis de ambiente.'
+        : err.code === 'auth/api-key-not-valid'
+        ? 'Chave API inválida. Configure VITE_FIREBASE_API_KEY.'
+        : `Erro: ${err.code || 'desconhecido'} - ${err.message || 'Tente novamente.'}`;
       
       setLocalError(errorMessage);
     } finally {
@@ -164,6 +178,31 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              
+              {/* Forgot Password Link */}
+              {isLogin && (
+                <div className="flex justify-end mt-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!email) {
+                        setLocalError('Digite seu email para recuperar a senha');
+                        return;
+                      }
+                      try {
+                        await resetPassword(email);
+                        setLocalError('');
+                        alert(`✅ Email de recuperação enviado para ${email}\n\nVerifique sua caixa de entrada e spam.`);
+                      } catch (err) {
+                        setLocalError('Erro ao enviar email. Verifique o endereço.');
+                      }
+                    }}
+                    className="text-sm text-amber-400 hover:text-amber-300 transition-colors"
+                  >
+                    Esqueci minha senha
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Submit Button */}

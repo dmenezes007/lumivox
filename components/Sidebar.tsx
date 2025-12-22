@@ -9,7 +9,8 @@ import {
   BarChart3,
   Settings,
   Upload,
-  Sparkles
+  Sparkles,
+  LogOut
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
