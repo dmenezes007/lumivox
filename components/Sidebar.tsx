@@ -26,6 +26,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   activeView = 'home', 
   onViewChange,
   onUploadNew,
+  onLogout,
+  userEmail,
   className 
 }) => {
   const menuItems = [
@@ -103,6 +105,16 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Settings className="w-4 h-4" />
           Configurações
         </Button>
+        {onLogout && (
+          <Button 
+            variant="outline" 
+            className="w-full justify-start gap-3 border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+            onClick={onLogout}
+          >
+            <LogOut className="w-4 h-4" />
+            Sair
+          </Button>
+        )}
       </div>
     </aside>
   );

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, Zap } from 'lucide-react';
-import Logo from './Logo';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -56,9 +55,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 animate-spin-slow" />
             </div>
             
-            {/* Logo Component */}
+            {/* Logo PNG */}
             <div className="relative">
-              <Logo size="xl" animated={true} />
+              <img 
+                src="/logo.png" 
+                alt="LumiVox" 
+                className="w-48 h-48 drop-shadow-2xl rounded-3xl"
+              />
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { DocumentContent, Language, LANGUAGES, AnalysisMode } from './types';
 import SplashScreen from './components/SplashScreen';
-import LoginPage from './components/LoginPage';
+import LoginScreen from './components/LoginScreen';
 import FileUpload from './components/FileUpload';
 import Sidebar from './components/Sidebar';
 import StatCard from './components/StatCard';
@@ -14,6 +14,7 @@ import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
 import { translateAndAnalyze, generateSpeech, decode, decodeAudioData } from './services/geminiService';
 import { isDemoMode } from './services/mockService';
+import { useAuth } from './hooks/useAuth';
 import { 
   FileText, 
   Languages as LanguagesIcon, 
@@ -35,6 +36,8 @@ type AppScreen = 'splash' | 'login' | 'app';
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('splash');
+  const { user, loading: authLoading, logout } = useAuth();
+  
   const [doc, setDoc] = useState<DocumentContent | null>(null);
   const [selectedLang, setSelectedLang] = useState<Language>(LANGUAGES[1]); // Default to PT
   const [loading, setLoading] = useState(false);
@@ -50,14 +53,37 @@ const App: React.FC = () => {
   const [processProgress, setProcessProgress] = useState(0);
   const [toasts, setToasts] = useState<ToastProps[]>([]);
 
+  // Handle authentication flow
+  useEffect(() => {
+    if (!authLoading) {
+      if (user && currentScreen === 'login') {
+        setCurrentScreen('app');
+      } else if (!user && currentScreen === 'app') {
+        setCurrentScreen('login');
+      }
+    }
+  }, [user, authLoading]);
+
   // Handle splash complete
   const handleSplashComplete = () => {
     setCurrentScreen('login');
   };
 
-  // Handle login
-  const handleLogin = () => {
+  // Handle login success
+  const handleLoginSuccess = () => {
     setCurrentScreen('app');
+    addToast('success', 'Login realizado!', `Bem-vindo, ${user?.email || 'Usuário'}`);
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setCurrentScreen('login');
+      addToast('info', 'Logout realizado', 'Até logo!');
+    } catch (err) {
+      addToast('error', 'Erro ao sair', 'Tente novamente');
+    }
   };
 
   // Render splash screen
@@ -65,9 +91,9 @@ const App: React.FC = () => {
     return <SplashScreen onComplete={handleSplashComplete} />;
   }
 
-  // Render login page
-  if (currentScreen === 'login') {
-    return <LoginPage onLogin={handleLogin} />;
+  // Render login screen (or if not authenticated)
+  if (currentScreen === 'login' || !user) {
+    return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
   }
 
   // Toast utility function
@@ -458,6 +484,8 @@ const App: React.FC = () => {
           setDoc(null);
           setActiveView('home');
         }}
+        onLogout={handleLogout}
+        userEmail={user?.email}
       />
       
       <main className="ml-64 p-8">
