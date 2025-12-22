@@ -24,15 +24,15 @@ const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={`inline-flex items-center ${className}`}>
-      {/* Elegant Icon - Book + Light Bulb Concept */}
+      {/* Icon in Rounded Rectangle */}
       <div className={`relative ${currentSize.container} ${animated ? 'group' : ''}`}>
         {/* Outer Glow */}
         {animated && (
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-amber-400/20 to-purple-500/20 blur-xl animate-pulse" />
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-400/20 to-amber-600/20 blur-md animate-pulse" />
         )}
         
-        {/* Main Icon Circle */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-2xl transition-all duration-300" />
+        {/* Main Rectangle with Gradient */}
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-xl transition-all duration-300" />
         
         {/* Icon Content */}
         <div className="absolute inset-0 flex items-center justify-center">
@@ -42,99 +42,48 @@ const Logo: React.FC<LogoProps> = ({
             fill="none"
           >
             <defs>
-              <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#1e293b" />
                 <stop offset="100%" stopColor="#334155" />
               </linearGradient>
-              <linearGradient id="lightGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#fef3c7" />
-                <stop offset="100%" stopColor="#fbbf24" />
-              </linearGradient>
             </defs>
             
-            {/* Open Book Base */}
-            <path 
-              d="M 16 36 L 16 48 C 16 48 24 44 32 44 C 40 44 48 48 48 48 L 48 36 C 48 36 40 32 32 32 C 24 32 16 36 16 36 Z"
-              fill="url(#bookGradient)"
-              stroke="#475569"
-              strokeWidth="1"
-            />
-            
-            {/* Book Pages Left */}
-            <path 
-              d="M 16 36 C 16 36 24 32 32 32 L 32 44 C 24 44 16 48 16 48 Z"
-              fill="#64748b"
-              opacity="0.3"
-            />
-            
-            {/* Book Center Line */}
-            <line 
-              x1="32" 
-              y1="32" 
-              x2="32" 
-              y2="48" 
-              stroke="#1e293b" 
-              strokeWidth="1.5"
-            />
-            
-            {/* Light Bulb Above Book */}
-            <g transform="translate(32, 10)">
-              {/* Bulb Glass */}
-              <circle 
-                cx="0" 
-                cy="0" 
-                r="10" 
-                fill="url(#lightGradient)"
-                opacity="0.9"
-              />
-              
-              {/* Bulb Shine */}
-              <ellipse 
-                cx="-3" 
-                cy="-3" 
-                rx="4" 
-                ry="6" 
-                fill="#ffffff" 
-                opacity="0.5"
-              />
-              
-              {/* Bulb Base */}
+            {/* Simple Document Icon */}
+            <g transform="translate(16, 8)">
+              {/* Document Background */}
               <rect 
-                x="-4" 
-                y="10" 
-                width="8" 
-                height="4" 
-                rx="1"
-                fill="#64748b"
+                x="0" 
+                y="0" 
+                width="32" 
+                height="44" 
+                rx="2"
+                fill="url(#iconGradient)"
+                stroke="#475569"
+                strokeWidth="1.5"
               />
               
-              {/* Connection to Book */}
-              <line 
-                x1="0" 
-                y1="14" 
-                x2="0" 
-                y2="22" 
-                stroke="#fbbf24" 
-                strokeWidth="2"
+              {/* Document Lines */}
+              <line x1="6" y1="10" x2="26" y2="10" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="6" y1="16" x2="26" y2="16" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="6" y1="22" x2="22" y2="22" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="6" y1="28" x2="24" y2="28" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="6" y1="34" x2="20" y2="34" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" />
+              
+              {/* Sparkle/Star accent */}
+              <circle cx="16" y="5" r="2" fill="#fbbf24" opacity="0.8" />
+              <path 
+                d="M 16 3 L 16 7 M 14 5 L 18 5" 
+                stroke="#fef3c7" 
+                strokeWidth="1" 
                 strokeLinecap="round"
-                opacity="0.6"
               />
-              
-              {/* Light Rays */}
-              <g opacity="0.5" className={animated ? 'animate-pulse' : ''}>
-                <line x1="-12" y1="-8" x2="-16" y2="-12" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-                <line x1="12" y1="-8" x2="16" y2="-12" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-                <line x1="-14" y1="0" x2="-18" y2="0" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-                <line x1="14" y1="0" x2="18" y2="0" stroke="#fbbf24" strokeWidth="2" strokeLinecap="round" />
-              </g>
             </g>
             
-            {/* Sparkles */}
+            {/* Animated Sparkles */}
             {animated && (
-              <g opacity="0.7">
-                <circle cx="12" cy="28" r="1.5" fill="#fbbf24" className="animate-ping" />
-                <circle cx="52" cy="28" r="1.5" fill="#a78bfa" className="animate-ping" style={{ animationDelay: '0.5s' }} />
-                <circle cx="32" cy="52" r="1.5" fill="#fbbf24" className="animate-ping" style={{ animationDelay: '1s' }} />
+              <g opacity="0.6">
+                <circle cx="8" cy="32" r="1.5" fill="#fbbf24" className="animate-ping" />
+                <circle cx="56" cy="32" r="1.5" fill="#fbbf24" className="animate-ping" style={{ animationDelay: '0.5s' }} />
               </g>
             )}
           </svg>
