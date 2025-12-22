@@ -69,4 +69,5 @@ export async function mockGenerateSpeech(
   return null;
 }
 
-export const isDemoMode = !import.meta.env.GEMINI_API_KEY && !import.meta.env.VITE_GEMINI_API_KEY;
+// Usa a mesma variável que geminiService.ts
+export const isDemoMode = !process.env.API_KEY || process.env.API_KEY === "";
