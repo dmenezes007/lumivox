@@ -1,0 +1,7 @@
+{
+  "name": "Lumina Scholar",
+  "description": "An advanced academic document reader and translator that uses Gemini AI to analyze, translate, and read aloud scholarly papers in multiple languages.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
