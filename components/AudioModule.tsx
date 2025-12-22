@@ -31,32 +31,45 @@ const AudioModule: React.FC<AudioModuleProps> = ({
   languages
 }) => {
   const handleDownload = () => {
-    if (!audioGenerated || !audioBase64) return;
+    if (!audioGenerated || !audioBase64) {
+      console.warn('Download cancelado: áudio não gerado ou base64 vazio');
+      return;
+    }
     
     try {
-      // Decode base64 to PCM audio data
+      console.log('Iniciando download de áudio...');
+      console.log('Tamanho do base64:', audioBase64.length);
+      
+      // Decode base64 to raw bytes
       const binaryString = atob(audioBase64);
       const len = binaryString.length;
-      const pcmData = new Uint8Array(len);
+      const bytes = new Uint8Array(len);
       for (let i = 0; i < len; i++) {
-        pcmData[i] = binaryString.charCodeAt(i);
+        bytes[i] = binaryString.charCodeAt(i);
       }
       
-      // Convert PCM to WAV format
-      const sampleRate = 24000; // Sample rate from Gemini TTS
-      const numChannels = 1; // Mono
+      console.log('Bytes decodificados:', bytes.length);
+      
+      // Audio specs from Gemini TTS API
+      const sampleRate = 24000;
+      const numChannels = 1;
       const bitsPerSample = 16;
       
       // Create WAV header
-      const wavHeader = createWavHeader(pcmData.length, sampleRate, numChannels, bitsPerSample);
+      const wavHeader = createWavHeader(bytes.length, sampleRate, numChannels, bitsPerSample);
+      console.log('Header WAV criado:', wavHeader.length, 'bytes');
       
-      // Combine header and PCM data
-      const wavData = new Uint8Array(wavHeader.length + pcmData.length);
+      // Combine header and audio data
+      const wavData = new Uint8Array(wavHeader.length + bytes.length);
       wavData.set(wavHeader, 0);
-      wavData.set(pcmData, wavHeader.length);
+      wavData.set(bytes, wavHeader.length);
       
-      // Create blob with proper WAV MIME type
-      const blob = new Blob([wavData], { type: 'audio/wav' });
+      console.log('Arquivo WAV total:', wavData.length, 'bytes');
+      
+      // Create downloadable blob
+      const blob = new Blob([wavData.buffer], { type: 'audio/wav' });
+      console.log('Blob criado:', blob.size, 'bytes, tipo:', blob.type);
+      
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -65,9 +78,18 @@ const AudioModule: React.FC<AudioModuleProps> = ({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      console.log('✅ Download iniciado com sucesso!');
     } catch (error) {
-      console.error('Erro ao fazer download do áudio:', error);
+      console.error('❌ Erro ao fazer download do áudio:', error);
       alert('Erro ao fazer download do áudio. Por favor, tente novamente.');
+    }
+  };
+
+  // Helper function to write string to DataView
+  const writeString = (view: DataView, offset: number, string: string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
     }
   };
 
@@ -103,12 +125,6 @@ const AudioModule: React.FC<AudioModuleProps> = ({
     view.setUint32(40, dataLength, true);
 
     return new Uint8Array(header);
-  };
-
-  const writeString = (view: DataView, offset: number, string: string) => {
-    for (let i = 0; i < string.length; i++) {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
   };
 
   const textToNarrate = doc.translatedText || doc.originalText;
