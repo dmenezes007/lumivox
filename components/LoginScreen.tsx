@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Chrome, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
+import { Logo } from './Logo';
 
 interface LoginScreenProps {
   onLoginSuccess: () => void;
@@ -106,12 +107,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="relative group">
-            <div className="absolute inset-0 blur-2xl opacity-60 bg-gradient-to-r from-amber-400 to-purple-500 rounded-full" />
-            <img 
-              src="/iluminavox-logo.svg" 
-              alt="IluminaVox" 
-              className="relative w-32 h-32 drop-shadow-2xl transform group-hover:scale-105 transition-transform duration-300"
-            />
+            {/* Rotating Glow Ring */}
+            <div className="absolute -inset-8 blur-2xl opacity-50 transition-all duration-700 group-hover:blur-3xl group-hover:opacity-80">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 animate-spin-slow" />
+            </div>
+            
+            {/* Logo Component */}
+            <div className="relative scale-[3] transform transition-transform duration-700 group-hover:scale-[3.3]">
+              <Logo iconSize={32} showText={false} />
+            </div>
           </div>
         </div>
 
@@ -272,6 +276,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
           Protegido por autenticação Firebase
         </p>
       </div>
+
+      <style>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };
