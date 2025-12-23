@@ -9,15 +9,19 @@ export function LoginPage() {
       <div className="w-full max-w-md bg-card border border-border rounded-xl shadow-xl overflow-hidden">
         <div className="p-8 flex flex-col items-center text-center space-y-6">
           
-          {/* Logo Application */}
-          <div className="flex flex-col items-center gap-6 transform hover:scale-105 transition-transform duration-300">
+          {/* Logo Application - Same as Splash Screen */}
+          <div className="flex flex-col items-center gap-4">
             <div className="relative">
-              <div className="absolute -inset-8 bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 rounded-full blur-2xl opacity-20" />
-              <Logo iconSize={128} showText={false} className="drop-shadow-2xl" />
+              {/* Rotating Glow Ring */}
+              <div className="absolute -inset-6 blur-2xl opacity-50">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 animate-spin-slow" />
+              </div>
+              
+              {/* Logo Component */}
+              <div className="relative scale-[1.5] transform hover:scale-[1.65] transition-transform duration-300">
+                <Logo iconSize={32} showText={false} />
+              </div>
             </div>
-            <span className="text-3xl font-black tracking-tight bg-gradient-to-r from-amber-300 via-amber-400 to-purple-400 bg-clip-text text-transparent">
-              IluminaVox
-            </span>
           </div>
 
           <div className="space-y-2">
