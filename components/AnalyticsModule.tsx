@@ -19,9 +19,11 @@ interface DocumentHistory {
 
 interface AnalyticsModuleProps {
   documents: DocumentHistory[];
+  onViewDocument?: (docId: string) => void;
+  onDownloadDocument?: (docId: string) => void;
 }
 
-const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents }) => {
+const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocument, onDownloadDocument }) => {
   // Calculate real statistics from documents
   const totalProcessed = documents.filter(d => d.status === 'success').length;
   const successRate = documents.length > 0 
@@ -186,10 +188,20 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents }) => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 ml-4">
-                    <Button variant="ghost" size="sm" title="Ver detalhes">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      title="Ver detalhes"
+                      onClick={() => onViewDocument?.(doc.id)}
+                    >
                       <Eye className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" title="Download">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      title="Download"
+                      onClick={() => onDownloadDocument?.(doc.id)}
+                    >
                       <Download className="w-4 h-4" />
                     </Button>
                   </div>

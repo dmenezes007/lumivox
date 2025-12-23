@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { DocumentContent, Language, LANGUAGES, AnalysisMode, Voice, GEMINI_VOICES } from './types';
+import { DocumentContent, Language, LANGUAGES, AnalysisMode, Voice, GEMINI_VOICES, DocumentHistory } from './types';
 import SplashScreen from './components/SplashScreen';
 import LoginScreen from './components/LoginScreen';
 import FileUpload from './components/FileUpload';
@@ -55,7 +55,7 @@ const App: React.FC = () => {
   const [processingTime, setProcessingTime] = useState(0);
   const [totalProcessed, setTotalProcessed] = useState(0);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [documentHistory, setDocumentHistory] = useState<any[]>([]);
+  const [documentHistory, setDocumentHistory] = useState<DocumentHistory[]>([]);
   const [summary, setSummary] = useState<string>('');
   const [insights, setInsights] = useState<string>('');
   const [audioGenerated, setAudioGenerated] = useState(false);
@@ -73,14 +73,23 @@ const App: React.FC = () => {
 
   // Load document history from localStorage on mount
   useEffect(() => {
+    if (!user) {
+      setDocumentHistory([]);
+      return;
+    }
+    
     const savedHistory = localStorage.getItem('documentHistory');
     if (savedHistory) {
       try {
         const parsed = JSON.parse(savedHistory);
-        setDocumentHistory(parsed.map((doc: any) => ({
-          ...doc,
-          date: new Date(doc.date)
-        })));
+        // Filtrar apenas documentos do usuário logado
+        const userDocs = parsed
+          .filter((doc: any) => doc.userId === user.uid)
+          .map((doc: any) => ({
+            ...doc,
+            date: new Date(doc.date)
+          }));
+        setDocumentHistory(userDocs);
       } catch (error) {
         console.error('Error loading document history:', error);
       }
@@ -99,21 +108,44 @@ const App: React.FC = () => {
       localStorage.setItem('audioQuotaUsed', '0');
       setAudioQuotaUsed(0);
     }
-  }, []);
+  }, [user]);
 
-  // Save document history to localStorage whenever it changes
+  // Save document history to localStorage whenever it changes (preserving all users' data)
   useEffect(() => {
-    if (documentHistory.length > 0) {
-      localStorage.setItem('documentHistory', JSON.stringify(documentHistory));
+    if (!user || documentHistory.length === 0) return;
+    
+    // Carregar todos os documentos do localStorage
+    const savedHistory = localStorage.getItem('documentHistory');
+    let allDocs = [];
+    
+    if (savedHistory) {
+      try {
+        allDocs = JSON.parse(savedHistory);
+      } catch (error) {
+        console.error('Error parsing saved history:', error);
+      }
     }
-  }, [documentHistory]);
+    
+    // Remover documentos antigos do usuário atual e adicionar os novos
+    allDocs = allDocs.filter((d: any) => d.userId !== user.uid);
+    allDocs = [...allDocs, ...documentHistory];
+    
+    localStorage.setItem('documentHistory', JSON.stringify(allDocs));
+  }, [documentHistory, user]);
 
-  // Handle authentication flow
+  // Handle authentication flow and clear data on logout
   useEffect(() => {
     if (!authLoading) {
       if (user && currentScreen === 'login') {
         setCurrentScreen('app');
       } else if (!user && currentScreen === 'app') {
+        // Limpar dados do usuário ao fazer logout
+        setDocumentHistory([]);
+        setDoc(null);
+        setSummary('');
+        setInsights('');
+        setAudioGenerated(false);
+        setGeneratedAudioBase64('');
         setCurrentScreen('login');
       }
     }
@@ -190,7 +222,7 @@ const App: React.FC = () => {
     setActiveView('translate');
     setTotalProcessed(prev => prev + 1);
     
-    // Add to document history
+    // Add to document history with userId
     const newDoc = {
       id: Date.now().toString(),
       filename,
@@ -198,7 +230,8 @@ const App: React.FC = () => {
       status: 'processing' as const,
       processingTime: 0,
       wordCount,
-      language: selectedLang.name
+      language: selectedLang.name,
+      userId: user?.uid // Associa o documento ao usuário logado
     };
     setDocumentHistory(prev => [...prev, newDoc]);
     
@@ -495,9 +528,30 @@ const App: React.FC = () => {
     </div>
   );
 
-  const renderAnalytics = () => (
-    <AnalyticsModule documents={documentHistory} />
-  );
+  const renderAnalytics = () => {
+    // Garantir que só mostra documentos do usuário logado
+    const userDocuments = documentHistory.filter(d => d.userId === user?.uid);
+    
+    return (
+      <AnalyticsModule 
+        documents={userDocuments} 
+        onViewDocument={(docId) => {
+          const document = documentHistory.find(d => d.id === docId);
+          if (document) {
+            addToast('info', 'Visualizar Documento', `Abrindo ${document.filename}...`);
+            // Aqui você pode adicionar lógica para visualizar o documento
+          }
+        }}
+        onDownloadDocument={(docId) => {
+          const document = documentHistory.find(d => d.id === docId);
+          if (document) {
+            addToast('success', 'Download Iniciado', `Baixando ${document.filename}...`);
+            // Aqui você pode adicionar lógica para download
+          }
+        }}
+      />
+    );
+  };
 
   const renderTranslate = () => {
     if (!doc) return renderHome();

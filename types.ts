@@ -32,6 +32,17 @@ export enum AnalysisMode {
   Insights = 'INSIGHTS'
 }
 
+export interface DocumentHistory {
+  id: string;
+  filename: string;
+  date: Date;
+  status: 'success' | 'error' | 'processing';
+  processingTime: number;
+  wordCount: number;
+  language: string;
+  userId: string;
+}
+
 export interface Voice {
   id: string;
   name: string;
