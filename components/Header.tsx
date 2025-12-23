@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({
       {/* Page Title / Breadcrumb */}
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground text-sm hidden md:block">
-          / Dashboard
+          Dashboard
         </span>
       </div>
 
