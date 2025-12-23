@@ -121,7 +121,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         {/* Call to Action */}
         <div className="pt-4 space-y-2">
           <p className={`text-sm font-medium transition-all duration-300 ${isHovering ? 'text-amber-300 scale-105' : 'text-gray-400'}`}>
-            {isHovering ? '✨ Clique para descobrir o poder da IA' : 'Passe o mouse e clique para continuar'}
+            {isHovering ? '✨ Clique para descobrir o poder do IluminaVox' : 'Passe o mouse e clique para continuar'}
           </p>
           <div className="flex items-center justify-center gap-2">
             {[0, 1, 2].map((i) => (
