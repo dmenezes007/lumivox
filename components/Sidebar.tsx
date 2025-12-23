@@ -107,46 +107,16 @@ const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-4 border-t border-border bg-gradient-to-t from-muted/20 to-transparent space-y-2">
-        {!isCollapsed ? (
-          <>
-            <Button 
-              variant="default" 
-              className="w-full justify-start gap-3 brand-gradient hover:opacity-90 transition-opacity shadow-md"
-              onClick={onUploadNew}
-            >
-              <Upload className="w-4 h-4" />
-              Novo Upload
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
-              onClick={() => onViewChange?.('settings')}
-            >
-              <Settings className="w-4 h-4" />
-              Configurações
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button 
-              variant="default" 
-              className="w-full justify-center brand-gradient hover:opacity-90 transition-opacity shadow-md"
-              onClick={onUploadNew}
-              title="Novo Upload"
-            >
-              <Upload className="w-4 h-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="w-full justify-center text-muted-foreground hover:text-foreground"
-              onClick={() => onViewChange?.('settings')}
-              title="Configurações"
-            >
-              <Settings className="w-4 h-4" />
-            </Button>
-          </>
-        )}
+      <div className="p-4 border-t border-border bg-gradient-to-t from-muted/20 to-transparent">
+        <Button 
+          variant="default" 
+          className={`w-full ${isCollapsed ? 'justify-center' : 'justify-start gap-3'} brand-gradient hover:opacity-90 transition-opacity shadow-md`}
+          onClick={onUploadNew}
+          title={isCollapsed ? "Novo Upload" : undefined}
+        >
+          <Upload className="w-4 h-4" />
+          {!isCollapsed && "Novo Upload"}
+        </Button>
       </div>
     </aside>
   );
