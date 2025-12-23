@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, Zap } from 'lucide-react';
-import Logo from './Logo';
+import { Logo } from './Logo';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -58,7 +58,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             
             {/* Logo Component - Modern Design */}
             <div className="relative scale-[2.5]">
-              <Logo size="xl" animated={true} showText={false} />
+              <Logo iconSize={32} showText={false} />
             </div>
           </div>
         </div>
