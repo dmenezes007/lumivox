@@ -46,19 +46,19 @@ const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <Card className={cn("hover:shadow-md transition-shadow", className)}>
-      <CardContent className="p-6">
+      <CardContent className="p-4 md:p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-muted-foreground mb-2">
+            <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1 md:mb-2">
               {title}
             </p>
-            <div className="flex items-baseline gap-2">
-              <h3 className="text-3xl font-bold text-foreground">
+            <div className="flex items-baseline gap-1 md:gap-2">
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground">
                 {value}
               </h3>
               {trendValue && (
                 <span className={cn(
-                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold",
+                  "inline-flex items-center gap-0.5 md:gap-1 px-1.5 md:px-2 py-0.5 rounded-full text-[10px] md:text-xs font-semibold",
                   getTrendColor()
                 )}>
                   {getTrendIcon()}
@@ -73,7 +73,7 @@ const StatCard: React.FC<StatCardProps> = ({
             )}
           </div>
           {icon && (
-            <div className="ml-4 p-3 rounded-lg bg-primary/10 text-primary">
+            <div className="ml-2 md:ml-4 p-2 md:p-3 rounded-lg bg-primary/10 text-primary">
               {icon}
             </div>
           )}

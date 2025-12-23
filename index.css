@@ -316,6 +316,16 @@
     .hover-lift:hover {
       transform: none;
     }
+    
+    /* Optimize card spacing on mobile */
+    .space-y-6 {
+      gap: 1rem;
+    }
+    
+    /* Ensure cards don't have excessive height on mobile */
+    [class*="min-h-"] {
+      min-height: auto !important;
+    }
   }
   
   @media (max-width: 640px) {

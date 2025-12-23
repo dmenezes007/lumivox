@@ -15,7 +15,7 @@ export interface BentoGridItemProps {
 const BentoGrid: React.FC<BentoGridProps> = ({ children, className }) => {
   return (
     <div className={cn(
-      "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-fr",
+      "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 auto-rows-fr",
       className
     )}>
       {children}
@@ -36,7 +36,7 @@ const BentoGridItem: React.FC<BentoGridItemProps> = ({
 
   return (
     <div className={cn(
-      "min-h-[200px]",
+      "min-h-[160px] md:min-h-[200px]",
       spanClasses[span],
       className
     )}>
