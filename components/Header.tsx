@@ -33,9 +33,6 @@ const Header: React.FC<HeaderProps> = ({
     )}>
       {/* Page Title / Breadcrumb */}
       <div className="flex items-center gap-2">
-        <h2 className="text-xl font-semibold text-foreground">
-          IluminaVox
-        </h2>
         <span className="text-muted-foreground text-sm hidden md:block">
           / Dashboard
         </span>
