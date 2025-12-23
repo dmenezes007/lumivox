@@ -10,12 +10,10 @@ export function LoginPage() {
         <div className="p-8 flex flex-col items-center text-center space-y-6">
           
           {/* Logo Application */}
-          <div className="flex flex-col items-center gap-4 transform hover:scale-105 transition-transform duration-300">
+          <div className="flex flex-col items-center gap-6 transform hover:scale-105 transition-transform duration-300">
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 rounded-full blur-xl opacity-20" />
-              <div className="relative scale-125">
-                <Logo iconSize={40} showText={false} />
-              </div>
+              <div className="absolute -inset-8 bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 rounded-full blur-2xl opacity-20" />
+              <Logo iconSize={128} showText={false} className="drop-shadow-2xl" />
             </div>
             <span className="text-3xl font-black tracking-tight bg-gradient-to-r from-amber-300 via-amber-400 to-purple-400 bg-clip-text text-transparent">
               IluminaVox
