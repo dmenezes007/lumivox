@@ -54,7 +54,7 @@ const App: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [processingTime, setProcessingTime] = useState(0);
   const [totalProcessed, setTotalProcessed] = useState(0);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [documentHistory, setDocumentHistory] = useState<DocumentHistory[]>([]);
   const [summary, setSummary] = useState<string>('');
   const [insights, setInsights] = useState<string>('');
@@ -623,7 +623,6 @@ const App: React.FC = () => {
         activeView={activeView}
         onViewChange={(view) => {
           setActiveView(view);
-          setIsSidebarCollapsed(false);
         }}
         onUploadNew={() => {
           setDoc(null);
@@ -631,6 +630,8 @@ const App: React.FC = () => {
         }}
         onLogout={handleLogout}
         userEmail={user?.email}
+        isCollapsed={isSidebarCollapsed}
+        onToggle={setIsSidebarCollapsed}
       />
       
       <Header 
@@ -642,11 +643,12 @@ const App: React.FC = () => {
           setUnreadNotifications(0);
           addToast('info', 'Notificações', `Você tem ${documentHistory.length} documentos processados`);
         }}
+        onMenuClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
       
       <main className={cn(
-        "p-8 pt-24 transition-all duration-300",
-        isSidebarCollapsed ? "ml-20" : "ml-64"
+        "p-4 md:p-8 pt-20 md:pt-24 transition-all duration-300",
+        isSidebarCollapsed ? "md:ml-20" : "md:ml-64"
       )}>
         {/* Demo Mode Banner */}
         {isDemoMode && showDemoBanner && (
@@ -699,8 +701,8 @@ const App: React.FC = () => {
       </main>
 
       <footer className={cn(
-        "border-t border-border bg-card/50 backdrop-blur-sm py-6 text-center text-sm text-muted-foreground transition-all duration-300",
-        isSidebarCollapsed ? "ml-20" : "ml-64"
+        "border-t border-border bg-card/50 backdrop-blur-sm py-4 md:py-6 text-center text-xs md:text-sm text-muted-foreground transition-all duration-300",
+        isSidebarCollapsed ? "md:ml-20" : "md:ml-64"
       )}>
         <p className="flex items-center justify-center gap-2">
           &copy; 2025 IluminaVox - Powered by

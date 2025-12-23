@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, User, Bell, Settings } from 'lucide-react';
+import { LogOut, User, Bell, Settings, Menu } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
 
@@ -11,6 +11,7 @@ export interface HeaderProps {
   className?: string;
   notificationCount?: number;
   onNotificationClick?: () => void;
+  onMenuClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -20,26 +21,39 @@ const Header: React.FC<HeaderProps> = ({
   isCollapsed = false,
   className,
   notificationCount = 0,
-  onNotificationClick
+  onNotificationClick,
+  onMenuClick
 }) => {
   // Extract first name from email if no userName provided
   const displayName = userName || userEmail?.split('@')[0] || 'Usuário';
   
   return (
     <header className={cn(
-      "fixed top-0 right-0 h-16 bg-card/80 backdrop-blur-md border-b border-border flex items-center justify-between px-6 shadow-sm transition-all duration-300 z-40",
-      isCollapsed ? "left-20" : "left-64",
+      "fixed top-0 right-0 h-16 bg-card/80 backdrop-blur-md border-b border-border flex items-center justify-between px-4 md:px-6 shadow-sm transition-all duration-300 z-40",
+      isCollapsed ? "left-20" : "md:left-64 left-0",
       className
     )}>
-      {/* Page Title / Breadcrumb */}
-      <div className="flex items-center gap-2">
+      {/* Mobile Menu Button & Page Title */}
+      <div className="flex items-center gap-3">
+        {/* Hamburguer Menu - Mobile Only */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden hover:bg-muted"
+          onClick={onMenuClick}
+          aria-label="Abrir menu"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+        
+        {/* Page Title / Breadcrumb */}
         <span className="text-muted-foreground text-sm hidden md:block">
           Dashboard
         </span>
       </div>
 
       {/* User Section */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 md:gap-3">
         {/* Notifications */}
         <Button 
           variant="ghost" 
@@ -59,12 +73,12 @@ const Header: React.FC<HeaderProps> = ({
           )}
         </Button>
 
-        {/* User Info */}
-        <div className="hidden sm:flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+        {/* User Info - Hidden on small mobile */}
+        <div className="hidden sm:flex items-center gap-2 md:gap-3 px-2 md:px-3 py-2 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#E49B10] to-[#F5C344] flex items-center justify-center shadow-sm">
             <User className="w-4 h-4 text-[#3B2667]" />
           </div>
-          <div className="text-left">
+          <div className="text-left hidden md:block">
             <p className="text-sm font-medium text-foreground capitalize">
               {displayName}
             </p>
@@ -82,7 +96,7 @@ const Header: React.FC<HeaderProps> = ({
             className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
             onClick={onLogout}
           >
-            <LogOut className="w-4 h-4 mr-2" />
+            <LogOut className="w-4 h-4 md:mr-2" />
             <span className="hidden md:inline">Sair</span>
           </Button>
         )}

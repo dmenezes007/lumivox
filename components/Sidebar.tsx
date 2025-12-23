@@ -25,6 +25,8 @@ export interface SidebarProps {
   onLogout?: () => void;
   userEmail?: string;
   className?: string;
+  isCollapsed?: boolean;
+  onToggle?: (collapsed: boolean) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -33,9 +35,45 @@ const Sidebar: React.FC<SidebarProps> = ({
   onUploadNew,
   onLogout,
   userEmail,
-  className 
+  className,
+  isCollapsed: externalCollapsed,
+  onToggle
 }) => {
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [isCollapsed, setIsCollapsed] = React.useState(true);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  // Detect mobile viewport
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Sync with external state if provided
+  React.useEffect(() => {
+    if (externalCollapsed !== undefined) {
+      setIsCollapsed(externalCollapsed);
+    }
+  }, [externalCollapsed]);
+
+  const handleToggle = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    onToggle?.(newState);
+  };
+
+  const handleMenuItemClick = (viewId: string) => {
+    onViewChange?.(viewId);
+    // Auto-close sidebar on mobile after selection
+    if (isMobile) {
+      const newState = true;
+      setIsCollapsed(newState);
+      onToggle?.(newState);
+    }
+  };
   
   const menuItems = [
     { id: 'home', icon: Home, label: 'Início' },
@@ -47,11 +85,26 @@ const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className={cn(
-      "fixed left-0 top-0 h-screen bg-card border-r border-border flex flex-col shadow-xl transition-all duration-300",
-      isCollapsed ? "w-20" : "w-64",
-      className
-    )}>
+    <>
+      {/* Mobile Overlay */}
+      {isMobile && !isCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => {
+            setIsCollapsed(true);
+            onToggle?.(true);
+          }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={cn(
+        "fixed left-0 top-0 h-screen bg-card border-r border-border flex flex-col shadow-xl transition-all duration-300 z-50",
+        isCollapsed ? "w-20" : "w-64",
+        // Mobile: slide from left
+        isMobile && isCollapsed && "-translate-x-full md:translate-x-0",
+        className
+      )}>
       {/* Logo Component */}
       <div className="p-6 border-b border-border bg-gradient-to-br from-card to-muted/20 relative">
         {!isCollapsed ? (
@@ -66,7 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         
         {/* Toggle Button */}
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={handleToggle}
           className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-primary text-primary-foreground shadow-lg hover:scale-110 transition-transform flex items-center justify-center"
         >
           {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -82,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           return (
             <button
               key={item.id}
-              onClick={() => onViewChange?.(item.id)}
+              onClick={() => handleMenuItemClick(item.id)}
               title={isCollapsed ? item.label : undefined}
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all hover-lift",
@@ -119,6 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </Button>
       </div>
     </aside>
+    </>
   );
 };
 

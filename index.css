@@ -287,4 +287,47 @@
     transform: translateY(-2px);
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
   }
+  
+  /* Mobile Responsive Utilities */
+  @media (max-width: 768px) {
+    .mobile-text-sm {
+      font-size: 0.875rem;
+    }
+    
+    .mobile-text-xs {
+      font-size: 0.75rem;
+    }
+    
+    .mobile-p-4 {
+      padding: 1rem;
+    }
+    
+    .mobile-gap-2 {
+      gap: 0.5rem;
+    }
+    
+    /* Improve touch targets for mobile */
+    button, a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Reduce motion on mobile for better performance */
+    .hover-lift:hover {
+      transform: none;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    /* Further reduce spacing on small mobile */
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    
+    /* Stack cards vertically */
+    .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+      grid-template-columns: 1fr;
+    }
+  }
 }
