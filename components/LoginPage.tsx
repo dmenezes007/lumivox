@@ -10,7 +10,7 @@ export function LoginPage() {
         <div className="p-8 flex flex-col items-center text-center space-y-6">
           
           {/* Logo Application - Same as Splash Screen */}
-          <div className="flex flex-col items-center gap-6 py-2">
+          <div className="flex flex-col items-center gap-6 py-2 mb-6">
             <div className="relative group">
               {/* Rotating Glow Ring */}
               <div className="absolute -inset-8 blur-2xl opacity-50 transition-all duration-700 group-hover:blur-3xl group-hover:opacity-80">

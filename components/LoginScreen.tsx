@@ -105,7 +105,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md mx-4">
         {/* Logo */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-16">
           <div className="relative group">
             {/* Rotating Glow Ring */}
             <div className="absolute -inset-8 blur-2xl opacity-50 transition-all duration-700 group-hover:blur-3xl group-hover:opacity-80">
