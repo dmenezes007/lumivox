@@ -19,9 +19,12 @@ export function LoginPage() {
               
               {/* Logo Component */}
               <div className="relative scale-[2.5] transform transition-transform duration-700 group-hover:scale-[2.7]">
-               <Logo iconSize={80} className="scale-125" />
+                <Logo iconSize={32} showText={false} />
               </div>
             </div>
+            <span className="text-3xl font-black tracking-tight bg-gradient-to-r from-amber-300 via-amber-400 to-purple-400 bg-clip-text text-transparent">
+              IluminaVox
+            </span>
           </div>
 
           <div className="space-y-2">
