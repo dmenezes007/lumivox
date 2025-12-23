@@ -10,15 +10,15 @@ export function LoginPage() {
         <div className="p-8 flex flex-col items-center text-center space-y-6">
           
           {/* Logo Application - Same as Splash Screen */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative">
+          <div className="flex flex-col items-center gap-6 py-2">
+            <div className="relative group">
               {/* Rotating Glow Ring */}
-              <div className="absolute -inset-6 blur-2xl opacity-50">
+              <div className="absolute -inset-8 blur-2xl opacity-50 transition-all duration-700 group-hover:blur-3xl group-hover:opacity-80">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400 via-purple-500 to-amber-400 animate-spin-slow" />
               </div>
               
               {/* Logo Component */}
-              <div className="relative scale-[1.5] transform hover:scale-[1.65] transition-transform duration-300">
+              <div className="relative scale-[2.5] transform transition-transform duration-700 group-hover:scale-[2.7]">
                 <Logo iconSize={32} showText={false} />
               </div>
             </div>
@@ -66,6 +66,15 @@ export function LoginPage() {
           &copy; {new Date().getFullYear()} IluminaVox. Todos os direitos reservados.
         </div>
       </div>
+      <style>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+      `}</style>
     </div>
   );
 }
