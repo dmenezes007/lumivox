@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
-import Logo from './Logo';
+import { Logo } from './Logo';
 
 export interface SidebarProps {
   activeView?: string;
@@ -56,11 +56,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-6 border-b border-border bg-gradient-to-br from-card to-muted/20 relative">
         {!isCollapsed ? (
           <div className="flex items-center gap-3 mb-2">
-            <Logo size="sm" animated={false} showText={true} />
+            <Logo iconSize={24} showText={true} />
           </div>
         ) : (
           <div className="flex justify-center">
-            <Logo size="sm" animated={false} showText={false} />
+            <Logo iconSize={24} showText={false} />
           </div>
         )}
         
