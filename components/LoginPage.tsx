@@ -19,7 +19,7 @@ export function LoginPage() {
               
               {/* Logo Component */}
               <div className="relative scale-[2.5] transform transition-transform duration-700 group-hover:scale-[2.7]">
-                <Logo iconSize={32} showText={false} />
+               <Logo iconSize={80} className="scale-125" />
               </div>
             </div>
           </div>
