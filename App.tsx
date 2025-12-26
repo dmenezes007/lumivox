@@ -5,6 +5,7 @@ import LoginScreen from './components/LoginScreen';
 import FileUpload from './components/FileUpload';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import BottomNavigation from './components/BottomNavigation';
 import StatCard from './components/StatCard';
 import AnalyticsModule from './components/AnalyticsModule';
 import TranslateModule from './components/TranslateModule';
@@ -634,6 +635,14 @@ const App: React.FC = () => {
         onToggle={setIsSidebarCollapsed}
       />
       
+      {/* Bottom Navigation - Mobile Only */}
+      <BottomNavigation 
+        activeView={activeView}
+        onViewChange={(view) => {
+          setActiveView(view);
+        }}
+      />
+      
       <Header 
         userEmail={user?.email}
         onLogout={handleLogout}
@@ -647,7 +656,7 @@ const App: React.FC = () => {
       />
       
       <main className={cn(
-        "p-4 md:p-8 pt-20 md:pt-24 transition-all duration-300",
+        "p-4 md:p-8 pt-20 md:pt-24 pb-20 md:pb-8 transition-all duration-300",
         isSidebarCollapsed ? "md:ml-20" : "md:ml-64"
       )}>
         {/* Demo Mode Banner */}
@@ -701,7 +710,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className={cn(
-        "border-t border-border bg-card/50 backdrop-blur-sm py-4 md:py-6 text-center text-xs md:text-sm text-muted-foreground transition-all duration-300",
+        "border-t border-border bg-card/50 backdrop-blur-sm py-4 md:py-6 text-center text-xs md:text-sm text-muted-foreground transition-all duration-300 mb-16 md:mb-0",
         isSidebarCollapsed ? "md:ml-20" : "md:ml-64"
       )}>
         <p className="flex items-center justify-center gap-2">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, User, Bell, Settings, Menu } from 'lucide-react';
+import { LogOut, User, Bell } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
 
@@ -30,24 +30,13 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <header className={cn(
       "fixed top-0 right-0 h-16 bg-card/80 backdrop-blur-md border-b border-border flex items-center justify-between px-4 md:px-6 shadow-sm transition-all duration-300 z-40",
-      isCollapsed ? "left-20" : "md:left-64 left-0",
+      isCollapsed ? "left-0 md:left-20" : "md:left-64 left-0",
       className
     )}>
-      {/* Mobile Menu Button & Page Title */}
+      {/* Page Title */}
       <div className="flex items-center gap-3">
-        {/* Hamburguer Menu - Mobile Only */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden hover:bg-muted"
-          onClick={onMenuClick}
-          aria-label="Abrir menu"
-        >
-          <Menu className="w-5 h-5" />
-        </Button>
-        
         {/* Page Title / Breadcrumb */}
-        <span className="text-muted-foreground text-sm hidden md:block">
+        <span className="text-muted-foreground text-sm">
           Dashboard
         </span>
       </div>

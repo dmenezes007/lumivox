@@ -86,23 +86,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {isMobile && !isCollapsed && (
-        <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => {
-            setIsCollapsed(true);
-            onToggle?.(true);
-          }}
-        />
-      )}
-
-      {/* Sidebar */}
+      {/* Sidebar - Hidden on mobile, visible on desktop */}
       <aside className={cn(
-        "fixed left-0 top-0 h-screen bg-card border-r border-border flex flex-col shadow-xl transition-all duration-300 z-50",
+        "fixed left-0 top-0 h-screen bg-card border-r border-border flex-col shadow-xl transition-all duration-300 z-50 hidden md:flex",
         isCollapsed ? "w-20" : "w-64",
-        // Mobile: slide from left
-        isMobile && isCollapsed && "-translate-x-full md:translate-x-0",
         className
       )}>
       {/* Logo Component */}
