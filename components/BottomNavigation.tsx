@@ -31,7 +31,7 @@ const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
   return (
     <nav className={cn(
-      "fixed bottom-0 left-0 right-0 h-16 bg-card/95 backdrop-blur-md border-t border-border shadow-2xl z-50 md:hidden",
+      "fixed bottom-0 left-0 right-0 h-16 bg-card/95 backdrop-blur-md border-t border-border shadow-2xl z-[100] md:hidden",
       className
     )}>
       <div className="h-full flex items-center justify-around px-2">

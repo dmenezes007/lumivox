@@ -677,6 +677,11 @@ const App: React.FC = () => {
           addToast('info', 'Notificações', `Você tem ${documentHistory.length} documentos processados`);
         }}
         onMenuClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        onUploadNew={() => {
+          setDoc(null);
+          setActiveView('home');
+          addToast('info', 'Novo Upload', 'Pronto para enviar um novo documento');
+        }}
       />
       
       <main className={cn(

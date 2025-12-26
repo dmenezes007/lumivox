@@ -12,6 +12,7 @@ export interface HeaderProps {
   notificationCount?: number;
   onNotificationClick?: () => void;
   onMenuClick?: () => void;
+  onUploadNew?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -22,7 +23,8 @@ const Header: React.FC<HeaderProps> = ({
   className,
   notificationCount = 0,
   onNotificationClick,
-  onMenuClick
+  onMenuClick,
+  onUploadNew
 }) => {
   // Extract first name from email if no userName provided
   const displayName = userName || userEmail?.split('@')[0] || 'Usuário';
@@ -43,6 +45,21 @@ const Header: React.FC<HeaderProps> = ({
 
       {/* User Section */}
       <div className="flex items-center gap-2 md:gap-3">
+        {/* Novo Upload - Mobile Only */}
+        {onUploadNew && (
+          <Button 
+            variant="default"
+            size="sm"
+            className="md:hidden brand-gradient shadow-md hover:opacity-90"
+            onClick={onUploadNew}
+            title="Novo Upload"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </Button>
+        )}
+        
         {/* Notifications */}
         <Button 
           variant="ghost" 
