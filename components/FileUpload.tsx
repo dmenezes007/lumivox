@@ -79,7 +79,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileLoaded, isLoading }) => {
   return (
     <div 
       className={`relative border-2 border-dashed border-border/50 rounded-xl p-12 transition-all flex flex-col items-center justify-center text-center cursor-pointer bg-transparent backdrop-blur-sm
-        ${dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'hover:border-primary/50 hover:bg-card/30'}
+        ${dragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'hover:border-primary/50 hover:bg-card/10'}
         ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
