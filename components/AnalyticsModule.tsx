@@ -159,10 +159,10 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocu
               documents.slice().reverse().map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors border border-border"
+                  className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors border border-border"
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                  <div className="flex items-start md:items-center gap-3 md:gap-4 flex-1">
+                    <div className={`w-10 h-10 flex-shrink-0 rounded-lg flex items-center justify-center ${
                       doc.status === 'success' ? 'bg-green-500/20' : 
                       doc.status === 'error' ? 'bg-red-500/20' : 'bg-yellow-500/20'
                     }`}>
@@ -170,10 +170,11 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocu
                        doc.status === 'error' ? <XCircle className="w-5 h-5 text-red-400" /> :
                        <Clock className="w-5 h-5 text-yellow-400" />}
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-foreground">{doc.filename}</h4>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                        <span>{new Date(doc.date).toLocaleString('pt-BR')}</span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-foreground text-sm md:text-base truncate">{doc.filename}</h4>
+                      <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-muted-foreground mt-1">
+                        <span className="whitespace-nowrap">{new Date(doc.date).toLocaleDateString('pt-BR')}</span>
+                        <span className="hidden md:inline">{new Date(doc.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
                         <Badge variant="outline" className="text-xs">
                           {doc.wordCount} palavras
                         </Badge>
@@ -182,22 +183,23 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocu
                         </Badge>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-foreground">{doc.processingTime.toFixed(1)}s</p>
+                    <div className="flex md:flex-col items-center md:items-end gap-2 md:gap-1 md:text-right">
+                      <p className="text-xs md:text-sm font-medium text-foreground whitespace-nowrap">{doc.processingTime.toFixed(1)}s</p>
                       <Badge 
                         variant={doc.status === 'success' ? 'success' : doc.status === 'error' ? 'destructive' : 'warning'}
-                        className="text-xs mt-1"
+                        className="text-xs"
                       >
                         {doc.status === 'success' ? 'Sucesso' : doc.status === 'error' ? 'Erro' : 'Processando'}
                       </Badge>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 ml-4">
+                  <div className="flex items-center gap-2 justify-end md:ml-4">
                     <Button 
                       variant="ghost" 
                       size="sm" 
                       title="Ver detalhes"
                       onClick={() => onViewDocument?.(doc.id)}
+                      className="h-8"
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -206,6 +208,7 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocu
                       size="sm" 
                       title="Download"
                       onClick={() => onDownloadDocument?.(doc.id)}
+                      className="h-8"
                     >
                       <Download className="w-4 h-4" />
                     </Button>
