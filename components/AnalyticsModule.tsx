@@ -61,7 +61,7 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocu
   }));
 
   return (
-    <div className="space-y-6 pb-4">
+    <div className="space-y-6">
       {/* Header - Reorganizado para Mobile */}
       <div className="flex flex-col space-y-4">
         {/* Título e Subtítulo */}
