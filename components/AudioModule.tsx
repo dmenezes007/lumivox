@@ -47,7 +47,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
         </div>
         
         {/* Botões lado a lado no mobile */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <select 
             value={selectedVoice.id}
             onChange={(e) => onVoiceChange(voices.find(v => v.id === e.target.value) || voices[0])}
@@ -65,17 +65,17 @@ const AudioModule: React.FC<AudioModuleProps> = ({
             onClick={onProcess}
             disabled={loading}
             size="default"
-            className="w-full sm:w-auto shadow-lg hover-lift brand-gradient whitespace-nowrap"
+            className="shadow-lg hover-lift brand-gradient whitespace-nowrap"
           >
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 md:w-5 md:h-5 md:mr-2 animate-spin" />
-                <span className="hidden sm:inline">Gerando Áudio...</span>
+                <span className="hidden md:inline">Gerando Áudio...</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
-                <span className="sm:inline">Gerar Áudio</span>
+                <span className="hidden sm:inline">Gerar Áudio</span>
               </>
             )}
           </Button>
@@ -106,18 +106,12 @@ const AudioModule: React.FC<AudioModuleProps> = ({
             Áudio pronto para reprodução!
           </Badge>
         )}
-        
-        {!loading && !audioGenerated && (
-          <Badge variant="outline" className="text-muted-foreground">
-            Selecione uma voz e clique em "Gerar Áudio"
-          </Badge>
-        )}
       </div>
 
       {/* Document Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Original - Accordion Style */}
-        <Card className="h-[600px] flex flex-col">
+        <Card className={`flex flex-col ${isDocumentExpanded ? 'h-[600px]' : 'h-auto'}`}>
           <CardHeader 
             className="border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
             onClick={() => setIsDocumentExpanded(!isDocumentExpanded)}

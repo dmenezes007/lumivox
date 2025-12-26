@@ -103,7 +103,7 @@ const TranslateModule: React.FC<TranslateModuleProps> = ({
       {/* Document Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Original */}
-        <Card className="h-[600px] flex flex-col">
+        <Card className={`flex flex-col ${isDocumentExpanded ? 'h-[600px]' : 'h-auto'}`}>
           <CardHeader 
             className="border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
             onClick={() => setIsDocumentExpanded(!isDocumentExpanded)}
