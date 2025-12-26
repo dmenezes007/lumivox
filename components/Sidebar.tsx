@@ -145,19 +145,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           );
         })}
       </nav>
-
-      {/* Bottom Actions */}
-      <div className="p-4 border-t border-border bg-gradient-to-t from-muted/20 to-transparent">
-        <Button 
-          variant="default" 
-          className={`w-full ${isCollapsed ? 'justify-center' : 'justify-start gap-3'} brand-gradient hover:opacity-90 transition-opacity shadow-md`}
-          onClick={onUploadNew}
-          title={isCollapsed ? "Novo Upload" : undefined}
-        >
-          <Upload className="w-4 h-4" />
-          {!isCollapsed && "Novo Upload"}
-        </Button>
-      </div>
     </aside>
     </>
   );

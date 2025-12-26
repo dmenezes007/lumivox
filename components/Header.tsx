@@ -1,7 +1,8 @@
 import React from 'react';
-import { LogOut, User, Bell } from 'lucide-react';
+import { LogOut, User, Bell, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import { Logo } from './Logo';
 
 export interface HeaderProps {
   userEmail?: string;
@@ -37,6 +38,11 @@ const Header: React.FC<HeaderProps> = ({
     )}>
       {/* Page Title */}
       <div className="flex items-center gap-3">
+        {/* Logo - Mobile Only */}
+        <div className="md:hidden">
+          <Logo iconSize={20} showText={false} />
+        </div>
+        
         {/* Page Title / Breadcrumb */}
         <span className="text-muted-foreground text-sm">
           Dashboard
@@ -45,18 +51,17 @@ const Header: React.FC<HeaderProps> = ({
 
       {/* User Section */}
       <div className="flex items-center gap-2 md:gap-3">
-        {/* Novo Upload - Mobile Only */}
+        {/* Novo Upload - Todas as telas */}
         {onUploadNew && (
           <Button 
             variant="default"
             size="sm"
-            className="md:hidden brand-gradient shadow-md hover:opacity-90"
+            className="brand-gradient shadow-md hover:opacity-90"
             onClick={onUploadNew}
             title="Novo Upload"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
+            <Upload className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">Novo Upload</span>
           </Button>
         )}
         

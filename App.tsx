@@ -739,13 +739,13 @@ const App: React.FC = () => {
       </main>
 
       <footer className={cn(
-        "border-t border-border bg-card/50 backdrop-blur-sm py-4 md:py-6 text-center text-xs md:text-sm text-muted-foreground transition-all duration-300 mb-16 md:mb-0",
+        "border-t border-border bg-card/50 backdrop-blur-sm py-3 md:py-4 text-center text-xs md:text-sm text-muted-foreground transition-all duration-300 mb-16 md:mb-0",
         isSidebarCollapsed ? "md:ml-20" : "md:ml-64"
       )}>
         <p className="flex items-center justify-center gap-2">
           &copy; 2025 IluminaVox - Powered by
           <span className="font-semibold text-gradient">Gemini AI</span>
-          <Sparkles className="w-4 h-4 text-primary" />
+          <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-primary" />
         </p>
       </footer>
 
