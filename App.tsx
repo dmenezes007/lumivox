@@ -621,19 +621,14 @@ const App: React.FC = () => {
     return (
       <AudioModule
         doc={doc}
-        selectedLang={selectedLang}
         loading={loading}
         isSpeaking={isSpeaking}
         audioGenerated={audioGenerated}
         selectedVoice={selectedVoice}
         voices={GEMINI_VOICES}
-        audioQuotaUsed={audioQuotaUsed}
-        audioQuotaLimit={audioQuotaLimit}
         onProcess={handleGenerateAudio}
         onPlayPause={handleTTS}
-        onLanguageChange={setSelectedLang}
         onVoiceChange={setSelectedVoice}
-        languages={LANGUAGES}
       />
     );
   };

@@ -3,44 +3,32 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { FileText, Volume2, Loader2, Play, Pause, Sparkles, User } from 'lucide-react';
-import { DocumentContent, Language, Voice } from '../types';
+import { DocumentContent, Voice } from '../types';
 
 interface AudioModuleProps {
   doc: DocumentContent;
-  selectedLang: Language;
   loading: boolean;
   isSpeaking: boolean;
   audioGenerated: boolean;
   selectedVoice: Voice;
   voices: Voice[];
-  audioQuotaUsed: number;
-  audioQuotaLimit: number;
   onProcess: () => void;
   onPlayPause: () => void;
-  onLanguageChange: (lang: Language) => void;
   onVoiceChange: (voice: Voice) => void;
-  languages: Language[];
 }
 
 const AudioModule: React.FC<AudioModuleProps> = ({
   doc,
-  selectedLang,
   loading,
   isSpeaking,
   audioGenerated,
   selectedVoice,
   voices,
-  audioQuotaUsed,
-  audioQuotaLimit,
   onProcess,
   onPlayPause,
-  onLanguageChange,
-  onVoiceChange,
-  languages
+  onVoiceChange
 }) => {
   const textToNarrate = doc.translatedText || doc.originalText;
-  const quotaRemaining = audioQuotaLimit - audioQuotaUsed;
-  const quotaPercentage = (audioQuotaUsed / audioQuotaLimit) * 100;
 
   return (
     <div className="space-y-6">
@@ -60,16 +48,6 @@ const AudioModule: React.FC<AudioModuleProps> = ({
         {/* Botões lado a lado no mobile */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3">
           <select 
-            value={selectedLang.code}
-            onChange={(e) => onLanguageChange(languages.find(l => l.code === e.target.value) || languages[0])}
-            className="flex-1 bg-card border-2 border-border hover:border-primary rounded-lg px-3 md:px-4 py-2 md:py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
-          >
-            {languages.map(lang => (
-              <option key={lang.code} value={lang.code}>{lang.flag} {lang.name}</option>
-            ))}
-          </select>
-          
-          <select 
             value={selectedVoice.id}
             onChange={(e) => onVoiceChange(voices.find(v => v.id === e.target.value) || voices[0])}
             className="flex-1 bg-card border-2 border-border hover:border-primary rounded-lg px-3 md:px-4 py-2 md:py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
@@ -84,7 +62,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
           
           <Button 
             onClick={onProcess}
-            disabled={loading || quotaRemaining <= 0}
+            disabled={loading}
             size="default"
             className="w-full sm:w-auto shadow-lg hover-lift brand-gradient whitespace-nowrap"
           >
@@ -103,54 +81,36 @@ const AudioModule: React.FC<AudioModuleProps> = ({
         </div>
       </div>
 
-      {/* Info + Quota Indicator */}
+      {/* Info e Status de Processamento */}
       <div className="flex items-center gap-2 flex-wrap">
         <Badge variant="info">
           {textToNarrate.split(' ').length} palavras
-        </Badge>
-        <Badge variant="outline">
-          Idioma: {selectedLang.name}
         </Badge>
         <Badge variant="outline" className="gap-1">
           <User className="w-3 h-3" />
           Voz: {selectedVoice.name}
         </Badge>
-        {audioGenerated && (
-          <Badge variant="success">
-            Áudio pronto
+        
+        {/* Status de Processamento */}
+        {loading && (
+          <Badge variant="warning" className="gap-2 animate-pulse">
+            <Loader2 className="w-3 h-3 animate-spin" />
+            Gerando áudio... Aguarde
           </Badge>
         )}
         
-        {/* Quota Status */}
-        <div className="ml-auto flex items-center gap-2">
-          <div className="text-xs text-muted-foreground">
-            Quota Diária:
-          </div>
-          {quotaRemaining > 0 ? (
-            <Badge 
-              variant={quotaRemaining <= 3 ? "warning" : "default"} 
-              className="text-xs font-mono"
-            >
-              {quotaRemaining}/{audioQuotaLimit} disponíveis
-            </Badge>
-          ) : (
-            <Badge variant="destructive" className="text-xs animate-pulse">
-              ⚠️ Quota esgotada - Aguarde até amanhã
-            </Badge>
-          )}
-          
-          {/* Progress Bar */}
-          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-            <div 
-              className={`h-full transition-all duration-500 ${
-                quotaPercentage >= 100 ? 'bg-red-500' :
-                quotaPercentage >= 70 ? 'bg-yellow-500' :
-                'bg-green-500'
-              }`}
-              style={{ width: `${quotaPercentage}%` }}
-            />
-          </div>
-        </div>
+        {!loading && audioGenerated && (
+          <Badge variant="success" className="gap-1">
+            <Play className="w-3 h-3" />
+            Áudio pronto para reprodução!
+          </Badge>
+        )}
+        
+        {!loading && !audioGenerated && (
+          <Badge variant="outline" className="text-muted-foreground">
+            Selecione uma voz e clique em "Gerar Áudio"
+          </Badge>
+        )}
       </div>
 
       {/* Document Content */}
@@ -188,7 +148,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
                   </div>
                   <h3 className="text-xl font-bold mb-2">{doc.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">
-                    Narração em {selectedLang.name} • Voz {selectedVoice.name}
+                    Narração com voz {selectedVoice.name}
                   </p>
                   <p className="text-xs text-muted-foreground mb-6">
                     {selectedVoice.description}
