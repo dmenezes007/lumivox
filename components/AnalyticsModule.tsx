@@ -61,13 +61,13 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocu
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-4">
       {/* Header - Reorganizado para Mobile */}
       <div className="flex flex-col space-y-4">
         {/* Título e Subtítulo */}
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 flex items-center">
-            <Volume2 className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 text-primary" />
+            <BarChart3 className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 text-primary" />
             Análises e Métricas
           </h1>
           <p className="text-sm md:text-base text-muted-foreground">

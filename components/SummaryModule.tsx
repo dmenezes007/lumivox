@@ -77,7 +77,7 @@ const SummaryModule: React.FC<SummaryModuleProps> = ({
       {/* Info */}
       <div className="flex items-center gap-2">
         <Badge variant="info">
-          {doc.originalText.split(' ').length} palavras no original
+          {doc.originalText.split(' ').length} palavras
         </Badge>
         {summary && (
           <Badge variant="success">

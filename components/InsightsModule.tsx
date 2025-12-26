@@ -77,7 +77,7 @@ const InsightsModule: React.FC<InsightsModuleProps> = ({
       {/* Info */}
       <div className="flex items-center gap-2">
         <Badge variant="info">
-          {doc.originalText.split(' ').length} palavras analisadas
+          {doc.originalText.split(' ').length} palavras
         </Badge>
         {insights && (
           <Badge variant="success">
