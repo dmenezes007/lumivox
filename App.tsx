@@ -493,6 +493,36 @@ const App: React.FC = () => {
         </p>
       </div>
 
+      {/* Upload Section - Destaque Principal */}
+      <div className="relative mb-6 md:mb-10">
+        {/* Indicador "Começe por aqui" */}
+        <div className="flex items-center justify-center mb-3 md:mb-4">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#E49B10]/20 to-[#F5C344]/20 border border-[#E49B10]/40 backdrop-blur-sm animate-pulse">
+            <div className="w-2 h-2 rounded-full bg-[#E49B10] animate-ping" />
+            <span className="text-sm font-semibold text-[#F5C344]">
+              👉 Começe por aqui
+            </span>
+            <div className="w-2 h-2 rounded-full bg-[#E49B10] animate-ping" />
+          </div>
+        </div>
+        
+        {/* Upload Component com Efeitos */}
+        <div className="relative">
+          {/* Glow Effect animado */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-[#E49B10] via-[#F5C344] to-[#E49B10] rounded-2xl blur-xl opacity-40 animate-pulse" />
+          
+          {/* Border animado */}
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#E49B10] via-[#F5C344] to-[#E49B10] rounded-2xl opacity-75 animate-[spin_3s_linear_infinite]" 
+               style={{ backgroundSize: '200% 200%' }} />
+          
+          {/* Conteúdo */}
+          <div className="relative">
+            <FileUpload onFileLoaded={handleFileLoaded} isLoading={loading} />
+          </div>
+        </div>
+      </div>
+
+      {/* Cards de Estatísticas */}
       <BentoGrid>
         <BentoGridItem>
           <StatCard
@@ -522,10 +552,6 @@ const App: React.FC = () => {
           />
         </BentoGridItem>
       </BentoGrid>
-
-      <div className="mt-4 md:mt-8">
-        <FileUpload onFileLoaded={handleFileLoaded} isLoading={loading} />
-      </div>
     </div>
   );
 
