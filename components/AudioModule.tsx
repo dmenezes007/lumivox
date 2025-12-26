@@ -44,22 +44,25 @@ const AudioModule: React.FC<AudioModuleProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header - Reorganizado para Mobile */}
+      <div className="flex flex-col space-y-4">
+        {/* Título e Subtítulo */}
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            <Volume2 className="inline-block w-8 h-8 mr-3 text-primary" />
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 flex items-center">
+            <Volume2 className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 text-primary" />
             Conversão para Áudio
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Transforme seu documento em narração com vozes premium
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        
+        {/* Botões lado a lado no mobile */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 md:gap-3">
           <select 
             value={selectedLang.code}
             onChange={(e) => onLanguageChange(languages.find(l => l.code === e.target.value) || languages[0])}
-            className="bg-card border-2 border-border hover:border-primary rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
+            className="flex-1 bg-card border-2 border-border hover:border-primary rounded-lg px-3 md:px-4 py-2 md:py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
           >
             {languages.map(lang => (
               <option key={lang.code} value={lang.code}>{lang.flag} {lang.name}</option>
@@ -69,7 +72,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
           <select 
             value={selectedVoice.id}
             onChange={(e) => onVoiceChange(voices.find(v => v.id === e.target.value) || voices[0])}
-            className="bg-card border-2 border-border hover:border-primary rounded-lg px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
+            className="flex-1 bg-card border-2 border-border hover:border-primary rounded-lg px-3 md:px-4 py-2 md:py-2.5 text-sm font-medium focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm hover:shadow-md"
             title={selectedVoice.description}
           >
             {voices.map(voice => (
@@ -82,18 +85,18 @@ const AudioModule: React.FC<AudioModuleProps> = ({
           <Button 
             onClick={onProcess}
             disabled={loading || quotaRemaining <= 0}
-            size="lg"
-            className="shadow-lg hover-lift brand-gradient"
+            size="default"
+            className="w-full sm:w-auto shadow-lg hover-lift brand-gradient whitespace-nowrap"
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Gerando Áudio...
+                <Loader2 className="w-4 h-4 md:w-5 md:h-5 md:mr-2 animate-spin" />
+                <span className="hidden sm:inline">Gerando Áudio...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-5 h-5 mr-2" />
-                Gerar Áudio
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
+                <span className="sm:inline">Gerar Áudio</span>
               </>
             )}
           </Button>

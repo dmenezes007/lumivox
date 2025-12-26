@@ -36,35 +36,40 @@ const SummaryModule: React.FC<SummaryModuleProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header - Reorganizado para Mobile */}
+      <div className="flex flex-col space-y-4">
+        {/* Título e Subtítulo */}
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            <BookOpen className="inline-block w-8 h-8 mr-3 text-primary" />
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 flex items-center">
+            <BookOpen className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 text-primary" />
             Resumo Acadêmico
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Gere um resumo estruturado e conciso do seu documento
           </p>
         </div>
-        <Button 
-          onClick={onProcess}
-          disabled={loading}
-          size="lg"
-          className="shadow-lg hover-lift brand-gradient"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              Gerando Resumo...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-5 h-5 mr-2" />
-              Gerar Resumo
-            </>
-          )}
-        </Button>
+        
+        {/* Botão */}
+        <div>
+          <Button 
+            onClick={onProcess}
+            disabled={loading}
+            size="default"
+            className="w-full md:w-auto shadow-lg hover-lift brand-gradient"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 md:w-5 md:h-5 md:mr-2 animate-spin" />
+                <span className="hidden sm:inline">Gerando Resumo...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
+                <span className="sm:inline">Gerar Resumo</span>
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Info */}
