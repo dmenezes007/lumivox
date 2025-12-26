@@ -146,14 +146,6 @@ const AudioModule: React.FC<AudioModuleProps> = ({
               </div>
             </CardContent>
           )}
-          {!isDocumentExpanded && (
-            <CardContent className="flex items-center justify-center p-6 text-muted-foreground">
-              <div className="text-center">
-                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">Clique para expandir e ver o documento</p>
-              </div>
-            </CardContent>
-          )}
         </Card>
 
         {/* Audio Player */}

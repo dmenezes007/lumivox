@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { FileText, BookOpen, Download, Loader2, Sparkles } from 'lucide-react';
+import { FileText, BookOpen, Download, Loader2, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { DocumentContent } from '../types';
 
 interface SummaryModuleProps {
@@ -18,6 +18,8 @@ const SummaryModule: React.FC<SummaryModuleProps> = ({
   summary,
   onProcess
 }) => {
+  const [isDocumentExpanded, setIsDocumentExpanded] = useState(false);
+  
   const handleDownload = () => {
     if (!summary) return;
     
@@ -88,17 +90,34 @@ const SummaryModule: React.FC<SummaryModuleProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Original */}
         <Card className="h-[600px] flex flex-col">
-          <CardHeader className="border-b border-border">
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-muted-foreground" />
-              Documento Original
+          <CardHeader 
+            className="border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
+            onClick={() => setIsDocumentExpanded(!isDocumentExpanded)}
+          >
+            <CardTitle className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-muted-foreground" />
+                Documento Original
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs">
+                  {doc.originalText.split(' ').length} palavras
+                </Badge>
+                {isDocumentExpanded ? (
+                  <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                )}
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-            <div className="academic-text text-foreground whitespace-pre-line">
-              {doc.originalText}
-            </div>
-          </CardContent>
+          {isDocumentExpanded && (
+            <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin">
+              <div className="academic-text text-foreground whitespace-pre-line">
+                {doc.originalText}
+              </div>
+            </CardContent>
+          )}
         </Card>
 
         {/* Summary */}
