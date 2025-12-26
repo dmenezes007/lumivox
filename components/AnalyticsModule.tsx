@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { FileText, Volume2, Clock, CheckCircle, XCircle, TrendingUp, Download, Eye } from 'lucide-react';
+import { FileText, BarChart3, Clock, CheckCircle, XCircle, TrendingUp, Download, Eye } from 'lucide-react';
 import AnalyticsChart from './AnalyticsChart';
 import { BentoGrid, BentoGridItem } from './BentoGrid';
 import StatCard from './StatCard';
