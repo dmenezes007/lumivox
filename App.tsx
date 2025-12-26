@@ -82,14 +82,20 @@ const App: React.FC = () => {
     if (savedHistory) {
       try {
         const parsed = JSON.parse(savedHistory);
-        // Filtrar apenas documentos do usuário logado
+        // Filtrar apenas documentos do usuário logado que TÊM userId
         const userDocs = parsed
-          .filter((doc: any) => doc.userId === user.uid)
+          .filter((doc: any) => doc.userId && doc.userId === user.uid)
           .map((doc: any) => ({
             ...doc,
             date: new Date(doc.date)
           }));
         setDocumentHistory(userDocs);
+        
+        // Limpar documentos sem userId do localStorage (documentos antigos/inválidos)
+        const validDocs = parsed.filter((doc: any) => doc.userId);
+        if (validDocs.length !== parsed.length) {
+          localStorage.setItem('documentHistory', JSON.stringify(validDocs));
+        }
       } catch (error) {
         console.error('Error loading document history:', error);
       }
