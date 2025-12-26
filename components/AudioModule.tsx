@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { FileText, Volume2, Loader2, Play, Pause, Sparkles, User } from 'lucide-react';
+import { FileText, Volume2, Loader2, Play, Pause, Sparkles, User, ChevronDown, ChevronUp } from 'lucide-react';
 import { DocumentContent, Voice } from '../types';
 
 interface AudioModuleProps {
@@ -29,6 +29,7 @@ const AudioModule: React.FC<AudioModuleProps> = ({
   onVoiceChange
 }) => {
   const textToNarrate = doc.translatedText || doc.originalText;
+  const [isDocumentExpanded, setIsDocumentExpanded] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -115,19 +116,44 @@ const AudioModule: React.FC<AudioModuleProps> = ({
 
       {/* Document Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Original */}
+        {/* Original - Accordion Style */}
         <Card className="h-[600px] flex flex-col">
-          <CardHeader className="border-b border-border">
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-muted-foreground" />
-              Documento Original
+          <CardHeader 
+            className="border-b border-border cursor-pointer hover:bg-muted/50 transition-colors"
+            onClick={() => setIsDocumentExpanded(!isDocumentExpanded)}
+          >
+            <CardTitle className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-muted-foreground" />
+                Documento Original
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs">
+                  {doc.originalText.split(' ').length} palavras
+                </Badge>
+                {isDocumentExpanded ? (
+                  <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                )}
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-            <div className="academic-text text-foreground whitespace-pre-line">
-              {doc.originalText}
-            </div>
-          </CardContent>
+          {isDocumentExpanded && (
+            <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin">
+              <div className="academic-text text-foreground whitespace-pre-line">
+                {doc.originalText}
+              </div>
+            </CardContent>
+          )}
+          {!isDocumentExpanded && (
+            <CardContent className="flex items-center justify-center p-6 text-muted-foreground">
+              <div className="text-center">
+                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-sm">Clique para expandir e ver o documento</p>
+              </div>
+            </CardContent>
+          )}
         </Card>
 
         {/* Audio Player */}
