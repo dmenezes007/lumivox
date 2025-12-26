@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { FileText, Clock, CheckCircle, XCircle, TrendingUp, Download, Eye } from 'lucide-react';
+import { FileText, Volume2, Clock, CheckCircle, XCircle, TrendingUp, Download, Eye } from 'lucide-react';
 import AnalyticsChart from './AnalyticsChart';
 import { BentoGrid, BentoGridItem } from './BentoGrid';
 import StatCard from './StatCard';
@@ -66,11 +66,11 @@ const AnalyticsModule: React.FC<AnalyticsModuleProps> = ({ documents, onViewDocu
       <div className="flex flex-col space-y-4">
         {/* Título e Subtítulo */}
         <div>
-          <h1 className="text-2xl md:text-4xl font-bold mb-2 md:mb-3 flex items-center">
-            <TrendingUp className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 text-primary" />
-            <span className="text-gradient">Análises e Métricas</span>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 flex items-center">
+            <Volume2 className="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 text-primary" />
+            Análises e Métricas
           </h1>
-          <p className="text-sm md:text-xl text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Acompanhe o desempenho e histórico de processamento dos seus documentos
           </p>
         </div>

@@ -486,7 +486,6 @@ const App: React.FC = () => {
       <div className="mb-4 md:mb-8">
         <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-3">
           <span className="text-gradient">Bem-vindo ao IluminaVox</span>
-          <Sparkles className="inline-block w-8 h-8 ml-2 text-primary animate-pulse" />
         </h1>
         <p className="text-base md:text-xl text-muted-foreground">
           Traduza, analise e ouça seus documentos acadêmicos com Inteligência Artificial
