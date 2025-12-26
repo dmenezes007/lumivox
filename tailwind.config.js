@@ -61,10 +61,16 @@ export default {
           '0%': { transform: 'translateX(-75%)' },
           '100%': { transform: 'translateX(0%)' },
         },
+        'slide-bidirectional': {
+          '0%': { transform: 'translateX(-75%)' },
+          '50%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-75%)' },
+        },
       },
       animation: {
         'spin-slow': 'spin 3s linear infinite',
         'slide': 'slide 3s linear infinite',
+        'slide-bidirectional': 'slide-bidirectional 4s ease-in-out infinite',
       },
     },
   },

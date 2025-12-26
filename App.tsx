@@ -508,9 +508,9 @@ const App: React.FC = () => {
         
         {/* Upload Component com Borda Animada */}
         <div className="relative">
-          {/* Border com preenchimento cíclico */}
+          {/* Border com preenchimento cíclico bidirecional */}
           <div className="absolute -inset-0.5 rounded-2xl overflow-hidden">
-            <div className="w-[400%] h-full bg-gradient-to-r from-transparent via-[#E49B10] to-transparent animate-[slide_3s_linear_infinite]" />
+            <div className="w-[400%] h-full bg-gradient-to-r from-transparent via-[#E49B10] to-transparent animate-[slide-bidirectional_4s_ease-in-out_infinite]" />
           </div>
           
           {/* Conteúdo */}
