@@ -54,7 +54,6 @@ const App: React.FC = () => {
   const [showDemoBanner, setShowDemoBanner] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [processingTime, setProcessingTime] = useState(0);
-  const [totalProcessed, setTotalProcessed] = useState(0);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [documentHistory, setDocumentHistory] = useState<DocumentHistory[]>([]);
   const [summary, setSummary] = useState<string>('');
@@ -221,7 +220,6 @@ const App: React.FC = () => {
     setGeneratedAudioBase64('');
     
     setActiveView('translate');
-    setTotalProcessed(prev => prev + 1);
     
     // Add to document history with userId
     const newDoc = {
@@ -524,9 +522,9 @@ const App: React.FC = () => {
         <BentoGridItem>
           <StatCard
             title="Documentos Processados"
-            value={totalProcessed}
-            trend="up"
-            trendValue="+12%"
+            value={documentHistory.filter(d => d.status === 'success').length}
+            trend={documentHistory.length > 0 ? "up" : "neutral"}
+            trendValue={documentHistory.length > 0 ? `${documentHistory.length} total` : "—"}
             icon={<FileText className="w-6 h-6" />}
           />
         </BentoGridItem>
