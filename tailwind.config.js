@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Satoshi', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+        sans: ['Fira Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -57,9 +57,14 @@ export default {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
         },
+        slide: {
+          '0%': { transform: 'translateX(-75%)' },
+          '100%': { transform: 'translateX(0%)' },
+        },
       },
       animation: {
         'spin-slow': 'spin 3s linear infinite',
+        'slide': 'slide 3s linear infinite',
       },
     },
   },

@@ -500,20 +500,18 @@ const App: React.FC = () => {
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#E49B10]/20 to-[#F5C344]/20 border border-[#E49B10]/40 backdrop-blur-sm animate-pulse">
             <div className="w-2 h-2 rounded-full bg-[#E49B10] animate-ping" />
             <span className="text-sm font-semibold text-[#F5C344]">
-              👉 Começe por aqui
+              Comece por aqui
             </span>
             <div className="w-2 h-2 rounded-full bg-[#E49B10] animate-ping" />
           </div>
         </div>
         
-        {/* Upload Component com Efeitos */}
+        {/* Upload Component com Borda Animada */}
         <div className="relative">
-          {/* Glow Effect animado */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-[#E49B10] via-[#F5C344] to-[#E49B10] rounded-2xl blur-xl opacity-40 animate-pulse" />
-          
-          {/* Border animado */}
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#E49B10] via-[#F5C344] to-[#E49B10] rounded-2xl opacity-75 animate-[spin_3s_linear_infinite]" 
-               style={{ backgroundSize: '200% 200%' }} />
+          {/* Border com preenchimento cíclico */}
+          <div className="absolute -inset-0.5 rounded-2xl overflow-hidden">
+            <div className="w-[400%] h-full bg-gradient-to-r from-transparent via-[#E49B10] to-transparent animate-[slide_3s_linear_infinite]" />
+          </div>
           
           {/* Conteúdo */}
           <div className="relative">
